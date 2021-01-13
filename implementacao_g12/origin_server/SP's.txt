@@ -1,0 +1,299 @@
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `AlterarUtilizador`(IN `Mail` VARCHAR(100), IN `nPass` VARCHAR(10), IN `nMorada` VARCHAR(200))
+BEGIN
+	SELECT user INTO @userId FROM (
+		SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+    WHERE userhost = USER();
+	SELECT default_role INTO @role FROM (
+        SELECT default_role, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+    WHERE userhost = USER();
+    IF(CURRENT_ROLE = 'seguranca' OR @role= 'seguranca') THEN 
+		IF(Mail = @userID) THEN
+            IF(NOT(nPass = 'NULL')) THEN
+SET @sql := CONCAT('ALTER USER ','''', Mail,'''','@localhost', ' IDENTIFIED BY ', '''', nPass,'''');
+				PREPARE stmt FROM @sql;
+				EXECUTE stmt;
+			END IF;
+            IF(NOT(nMorada = 'NULL')) THEN
+				UPDATE utilizador
+SET Morada = nMorada WHERE EmailUtilizador = @userId;
+			END IF;
+        END IF;
+    ELSEIF(CURRENT_ROLE = 'chefe_seguranca' OR @role= 'chefe_seguranca') THEN 
+		IF(Mail = @userID) THEN
+			IF(NOT(nMorada = 'NULL')) THEN
+				UPDATE utilizador
+SET Morada = nMorada WHERE EmailUtilizador = @userId;
+			END IF;
+            IF(NOT(nPass = 'NULL')) THEN
+SET @sql := CONCAT('ALTER USER ','''', Mail,'''','@localhost', ' IDENTIFIED BY ', '''', nPass,'''');
+				PREPARE stmt FROM @sql;
+				EXECUTE stmt;
+			END IF;
+        ELSE
+			SELECT TipoUtilizador FROM utilizador WHERE EmailUtilizador = Mail INTO @Tipppo;
+            IF (@Tipppo = 'SEG') THEN
+				IF(NOT(nPass = 'NULL')) THEN
+					SET @sql := CONCAT('ALTER USER ','''', Mail,'''','@localhost', ' IDENTIFIED BY ', '''', nPass,'''');
+					PREPARE stmt FROM @sql;
+					EXECUTE stmt;
+				END IF;
+				IF(NOT(nMorada = 'NULL')) THEN
+					UPDATE utilizador
+					SET Morada = nMorada WHERE EmailUtilizador = Mail;
+				END IF;
+			END IF;	
+        END IF;
+	ELSE 
+		IF(NOT(nPass = 'NULL')) THEN
+			SET @sql := CONCAT('ALTER USER ','''', Mail,'''','@localhost', ' IDENTIFIED BY ', '''', nPass,'''');
+			PREPARE stmt FROM @sql;
+			EXECUTE stmt;
+		END IF;
+		IF(NOT(nMorada = 'NULL')) THEN
+				UPDATE utilizador
+SET Morada = nMorada WHERE EmailUtilizador = Mail;
+		END IF;
+        
+    END IF;
+
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ConsultarSistema`()
+BEGIN
+	SELECT IntervaloImportacaoMongo,TempoLimiteMedicao,tamanhoDosBuffersAnomalia,tamanhoDosBuffersAlerta,variacaoAnomalaTemperatura,variacaoAnomalaHumidade,crescimentoInstantaneoTemperatura,crescimentoGradualTemperatura,crescimentoInstantaneoHumidade,crescimentoGradualHumidade,luminosidadeLuzesDesligadas,limiteTemperatura,limiteHumidade FROM sistema;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `InserirAlerta`(
+	IN `ID` INT,
+	IN `DataHoraMedicao` TIMESTAMP,
+	IN `TipoSensor` VARCHAR(3),
+	IN `ValorMedicao` DECIMAL(6,2),
+	IN `Limite` DECIMAL(6,2),
+	IN `Descricao` VARCHAR(1000),
+	IN `Controlo` TINYINT,
+	IN `Extra` VARCHAR(50)
+)
+BEGIN
+
+INSERT INTO alerta VALUES (ID,DataHoraMedicao,TipoSensor,ValorMedicao,Limite,Descricao,Controlo,Extra);
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ConsultarUtilizador`(Email VARCHAR(100))
+BEGIN
+	SELECT user INTO @userId FROM (
+		SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+    WHERE userhost = USER();
+	SELECT default_role INTO @role FROM (
+        SELECT default_role, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+    WHERE userhost = USER();
+	 IF(CURRENT_ROLE = 'chefe_seguranca' OR @role= 'chefe_seguranca') THEN
+		SELECT NomeUtilizador FROM utilizador WHERE EmailUtilizador = Email INTO @Nomee;
+        SELECT TipoUtilizador FROM utilizador WHERE EmailUtilizador = Email INTO @Tipoo;
+        SELECT Morada FROM utilizador WHERE EmailUtilizador = Email INTo @Morada;
+        SELECT Morada FROM utilizador WHERE EmailUtilizador = Email INTo @cMorada;
+        SELECT NomeUtilizador FROM utilizador WHERE EmailUtilizador = @userId INTO @cNomee;
+        SELECT TipoUtilizador FROM utilizador WHERE EmailUtilizador = @userId INTO @cTipoo;
+		IF (Email = 'NULL') Then
+			SELECT * FROM utilizador where (TipoUtilizador = 'SEG' OR EmailUtilizador = @userId);
+            INSERT INTO g12_loguser VALUES ( DEFAULT, @UserID , 'SELECT',now(), Email, @cNomee, @cTipoo, @cMorada);
+		ELSEIF ( Email = @userId) THEN
+			SELECT * FROM utilizador where (EmailUtilizador = @userId);
+            INSERT INTO g12_loguser VALUES ( DEFAULT, @UserID , 'SELECT',now(), Email, @Nomee, @Tipoo, @Morada);
+		ELSE 
+			SELECT * FROM utilizador where (EmailUtilizador = Email AND TipoUtilizador = 'SEG');
+            INSERT INTO g12_loguser VALUES (  DEFAULT, @UserID , 'SELECT',now(), Email, @Nomee, @Tipoo, @Morada);
+        END IF;
+	ELSEIF(CURRENT_ROLE = 'seguranca' OR @role= 'seguranca') THEN 
+		SELECT NomeUtilizador FROM utilizador WHERE EmailUtilizador = Email INTO @Nomee;
+        SELECT TipoUtilizador FROM utilizador WHERE EmailUtilizador = Email INTO @Tipoo;
+        SELECT Morada FROM utilizador WHERE EmailUtilizador = Email INTo @Morada;
+        SELECT NomeUtilizador FROM utilizador WHERE EmailUtilizador = @userId INTO @cNomee;
+        SELECT TipoUtilizador FROM utilizador WHERE EmailUtilizador = @userId INTO @cTipoo;
+		IF (Email = 'NULL') Then
+			SELECT * FROM utilizador where (EmailUtilizador = @userId);
+            INSERT INTO g12_loguser VALUES ( DEFAULT, @UserID , 'SELECT',now(), Email, @cNomee, @cTipoo, @cMorada);
+		ELSEIF ( Email = @userId) THEN
+			SELECT * FROM utilizador where (EmailUtilizador = @userId);
+            INSERT INTO g12_loguser VALUES ( DEFAULT, @UserID , 'SELECT',now(), Email, @Nomee, @Tipoo, @Morada);
+		ELSE
+			SELECT * FROM utilizador where (EmailUtilizador = @userId AND EmailUtilizador = Email);
+        END IF;
+	ELSEIF(CURRENT_ROLE = 'diretor' OR @role= 'diretor' OR CURRENT_ROLE = 'admnistrador' OR @role= 'admnistrador') THEN
+		SELECT NomeUtilizador FROM utilizador WHERE EmailUtilizador = Email INTO @Nomee;
+        SELECT TipoUtilizador FROM utilizador WHERE EmailUtilizador = Email INTO @Tipoo;        
+        SELECT Morada FROM utilizador WHERE EmailUtilizador = Email INTo @Morada;
+        SELECT NomeUtilizador FROM utilizador WHERE EmailUtilizador = @userId INTO @cNomee;
+        SELECT TipoUtilizador FROM utilizador WHERE EmailUtilizador = @userId INTO @cTipoo;
+        IF (Email = 'NULL') Then
+			SELECT * FROM utilizador;
+             INSERT INTO g12_loguser VALUES ( DEFAULT, @UserID , 'SELECT',now(), Email, @cNomee, @cTipoo, @cMorada);
+		ELSE
+			SELECT * FROM utilizador where (EmailUtilizador = Email);
+            INSERT INTO g12_loguser VALUES (DEFAULT, @UserID , 'SELECT',now(), Email, @Nomee, @Tipoo, @Morada);
+		END IF;
+            
+	END IF;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `InserirUtilizador`(Email VARCHAR(100),  Nome VARCHAR(200), Tipo VARCHAR(3), Pass VARCHAR(10), Morada VARCHAR(200))
+BEGIN
+	SELECT user INTO @userId FROM (
+		SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+    WHERE userhost = USER();
+	SELECT default_role INTO @role FROM (
+        SELECT default_role, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+    WHERE userhost = USER();
+	 IF(CURRENT_ROLE = 'chefe_seguranca' OR @role= 'chefe_seguranca') THEN
+		IF(Tipo = 'SEG') THEN
+			INSERT INTO utilizador (
+				`EmailUtilizador`, `NomeUtilizador`, `TipoUtilizador`, `Morada`) VALUES (
+				Email,
+				Nome,
+				Tipo,
+Morada);
+				SET Email := CONCAT('''', Email, '''', '@', 'localhost'),
+					Pass := CONCAT('''', Pass, '''');
+				SET @sql := CONCAT('CREATE USER ', Email, ' IDENTIFIED BY ', Pass);
+				PREPARE stmt FROM @sql;
+				EXECUTE stmt;
+				SET @sql := CONCAT('GRANT seguranca TO ', Email);
+PREPARE stmt FROM @sql;
+				EXECUTE stmt;
+				DEALLOCATE PREPARE stmt;
+				SET @sql := CONCAT('SET DEFAULT ROLE seguranca FOR ', Email);
+				PREPARE stmt FROM @sql;
+				EXECUTE stmt;
+				DEALLOCATE PREPARE stmt;
+		END IF;
+    ELSEIF (CURRENT_ROLE = 'diretor' OR @role = 'diretor' OR CURRENT_ROLE = 'admnistrador' OR @role='admnistrador') THEN
+		IF(Tipo = 'SEG') THEN
+			INSERT INTO utilizador (
+				`EmailUtilizador`, `NomeUtilizador`, `TipoUtilizador`, `Morada`) VALUES (
+				Email,
+				Nome,
+				Tipo,
+Morada);
+				SET Email := CONCAT('''', Email, '''', '@', 'localhost'),
+					Pass := CONCAT('''', Pass, '''');
+				SET @sql := CONCAT('CREATE USER ', Email, ' IDENTIFIED BY ', Pass);
+				PREPARE stmt FROM @sql;
+				EXECUTE stmt;
+				SET @sql := CONCAT('GRANT seguranca TO ', Email);
+PREPARE stmt FROM @sql;
+				EXECUTE stmt;
+				DEALLOCATE PREPARE stmt;
+				SET @sql := CONCAT('SET DEFAULT ROLE seguranca FOR ', Email);
+				PREPARE stmt FROM @sql;
+				EXECUTE stmt;
+				DEALLOCATE PREPARE stmt;
+		ELSEIF(Tipo = 'CSG') THEN
+			INSERT INTO utilizador (
+				`EmailUtilizador`, `NomeUtilizador`, `TipoUtilizador`, `Morada`) VALUES (
+				Email,
+				Nome,
+				Tipo,
+Morada);
+				SET Email := CONCAT('''', Email, '''', '@', 'localhost'),
+					Pass := CONCAT('''', Pass, '''');
+				SET @sql := CONCAT('CREATE USER ', Email, ' IDENTIFIED BY ', Pass);
+				PREPARE stmt FROM @sql;
+				EXECUTE stmt;
+				SET @sql := CONCAT('GRANT chefe_seguranca TO ', Email);
+PREPARE stmt FROM @sql;
+				EXECUTE stmt;
+				DEALLOCATE PREPARE stmt;
+				SET @sql := CONCAT('SET DEFAULT ROLE chefe_seguranca FOR ', Email);
+				PREPARE stmt FROM @sql;
+				EXECUTE stmt;
+				DEALLOCATE PREPARE stmt;
+		ELSEIF(Tipo = 'DIR') THEN
+			INSERT INTO utilizador (
+				`EmailUtilizador`, `NomeUtilizador`, `TipoUtilizador`, `Morada`) VALUES (
+				Email,
+				Nome,
+				Tipo,
+Morada);
+				SET Email := CONCAT('''', Email, '''', '@', 'localhost'),
+					Pass := CONCAT('''', Pass, '''');
+				SET @sql := CONCAT('CREATE USER ', Email, ' IDENTIFIED BY ', Pass);
+				PREPARE stmt FROM @sql;
+				EXECUTE stmt;
+				SET @sql := CONCAT('GRANT diretor TO ', Email);
+PREPARE stmt FROM @sql;
+				EXECUTE stmt;
+				DEALLOCATE PREPARE stmt;
+				SET @sql := CONCAT('SET DEFAULT ROLE diretor FOR ', Email);
+				PREPARE stmt FROM @sql;
+				EXECUTE stmt;
+				DEALLOCATE PREPARE stmt;
+        ELSEIF(Tipo = 'AUD') THEN
+			INSERT INTO utilizador (
+				`EmailUtilizador`, `NomeUtilizador`, `TipoUtilizador`, `Morada`) VALUES (
+				Email,
+				Nome,
+				Tipo,
+Morada);
+				SET Email := CONCAT('''', Email, '''', '@', 'localhost'),
+					Pass := CONCAT('''', Pass, '''');
+				SET @sql := CONCAT('CREATE USER ', Email, ' IDENTIFIED BY ', Pass);
+				PREPARE stmt FROM @sql;
+				EXECUTE stmt;
+				SET @sql := CONCAT('GRANT auditor TO ', Email);
+PREPARE stmt FROM @sql;
+				EXECUTE stmt;
+				DEALLOCATE PREPARE stmt;
+				SET @sql := CONCAT('SET DEFAULT ROLE auditor FOR ', Email);
+				PREPARE stmt FROM @sql;
+				EXECUTE stmt;
+				DEALLOCATE PREPARE stmt; 
+		ELSEIF(Tipo = 'ADM') THEN
+			INSERT INTO utilizador (
+				`EmailUtilizador`, `NomeUtilizador`, `TipoUtilizador`, `Morada`) VALUES (
+				Email,
+				Nome,
+				Tipo,
+Morada);
+				SET Email := CONCAT('''', Email, '''', '@', 'localhost'),
+					Pass := CONCAT('''', Pass, '''');
+				SET @sql := CONCAT('CREATE USER ', Email, ' IDENTIFIED BY ', Pass);
+				PREPARE stmt FROM @sql;
+				EXECUTE stmt;
+				SET @sql := CONCAT('GRANT admnistrador TO ', Email);
+PREPARE stmt FROM @sql;
+				EXECUTE stmt;
+				DEALLOCATE PREPARE stmt;
+				SET @sql := CONCAT('SET DEFAULT ROLE admnistrador FOR ', Email);
+				PREPARE stmt FROM @sql;
+				EXECUTE stmt;
+				DEALLOCATE PREPARE stmt;
+		END IF;
+    END IF;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `InserirMedicao`(
+	IN `idMedicao` INT,
+	IN `ValorMedicao` DECIMAL(6,2),
+	IN `TipoSensor` VARCHAR(3),
+	IN `DataHoraMedicao` TIMESTAMP,
+	IN `Anomala` TINYINT
+)
+BEGIN
+
+IF Anomala = 1
+	THEN INSERT INTO medicao_sensores_anomalos VALUES (idMedicao,ValorMedicao,TipoSensor,DataHoraMedicao);
+ELSE 
+	INSERT INTO medicao_sensores VALUES (idMedicao,ValorMedicao,TipoSensor,DataHoraMedicao);
+END IF;
+END$$
+DELIMITER ;

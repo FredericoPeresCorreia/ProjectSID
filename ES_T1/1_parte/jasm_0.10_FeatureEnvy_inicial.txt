@@ -1,0 +1,4 @@
+Refactoring Type	Source Entity	Target Class	Source/Target accessed members	Rate it!
+Move Method	com.jasml.decompiler.SourceCodeBuilder::toString(com.jasml.classes.Attribute_LineNumberTable):java.lang.String	com.jasml.classes.Attribute_LineNumberTable	1/2	
+Move Method	com.jasml.compiler.JavaClassDumpper::dumpClassHeader():void	com.jasml.classes.JavaClass	2/3	
+Move Method	com.jasml.compiler.JavaClassDumpper::dumpClassInfo():void	com.jasml.classes.JavaClass	2/3	

@@ -1,0 +1,1 @@
+typeSearchIndex = [{"p":"Alertas","l":"Alerta"},{"l":"All Classes","url":"allclasses-index.html"},{"p":"Alertas","l":"AvaliaAlertaAssalto"},{"p":"Alertas","l":"AvaliaAlertaVariacaoTemperaturaHumidade"},{"p":"conn","l":"CloudToMongo"},{"p":"conn","l":"ConnectToMySql"},{"p":"Anomalias","l":"InsereMedicoesNoMySql"},{"p":"conn","l":"MongoParaMysql"},{"p":"conn","l":"SimulateSensor"}]

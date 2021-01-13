@@ -1,0 +1,171 @@
+DELIMITER //
+ 
+
+DROP TRIGGER Inserir_Utilizador;
+CREATE DEFINER=`root`@`localhost` TRIGGER Inserir_Utilizador 
+AFTER INSERT ON utilizador FOR EACH ROW
+BEGIN
+	-- Find username of person performing the INSERT into table
+	SELECT user INTO @UserMail FROM (
+        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+    WHERE userhost = USER();
+	INSERT INTO g12_loguser VALUES ( DEFAULT, @UserMail , 'INSERT',now(), new.EmailUtilizador, new.NomeUtilizador, new.TipoUtilizador, new.Morada);
+END; 
+
+DROP TRIGGER Atualizar_Utilizador;
+CREATE DEFINER=`root`@`localhost` TRIGGER Atualizar_Utilizador 
+AFTER UPDATE ON utilizador FOR EACH ROW
+BEGIN
+	-- Find username of person performing the INSERT into table
+	SELECT user INTO @UserMail FROM (
+        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+    WHERE userhost = USER();
+	INSERT INTO g12_loguser VALUES ( DEFAULT, @UserMail , 'UPDATE',now(), new.EmailUtilizador, new.NomeUtilizador, new.TipoUtilizador, new.Morada);
+END; 
+
+DROP TRIGGER Eliminar_Utilizador;
+CREATE DEFINER=`root`@`localhost` TRIGGER Eliminar_Utilizador 
+AFTER DELETE ON utilizador FOR EACH ROW
+BEGIN
+	-- Find username of person performing the INSERT into table
+	SELECT user INTO @UserMail FROM (
+        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+    WHERE userhost = USER();
+	INSERT INTO g12_loguser VALUES (DEFAULT, @UserMail , 'DELETE',now(), old.EmailUtilizador, old.NomeUtilizador, old.TipoUtilizador, old.Morada);
+END; 
+
+DROP TRIGGER Inserir_RondaExtra;
+CREATE DEFINER=`root`@`localhost` TRIGGER Inserir_RondaExtra
+AFTER INSERT ON rondaextra FOR EACH ROW
+BEGIN
+	-- Find username of person performing the INSERT into table
+	SELECT user INTO @UserMail FROM (
+        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+    WHERE userhost = USER();
+	INSERT INTO g12_logrondaextra VALUES ( DEFAULT,  @UserMail , 'INSERT', now(),new.dataHoraEntrada);
+END; 
+
+DROP TRIGGER Atualizar_RondaExtra;
+CREATE DEFINER=`root`@`localhost` TRIGGER Atualizar_RondaExtra
+AFTER UPDATE ON rondaextra FOR EACH ROW
+BEGIN
+	-- Find username of person performing the INSERT into table
+	SELECT user INTO @UserMail FROM (
+        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+    WHERE userhost = USER();
+	INSERT INTO g12_logrondaextra VALUES (DEFAULT,  @UserMail , 'UPDATE', now(),new.dataHoraEntrada);
+END; 
+
+DROP TRIGGER Eliminar_RondaExtra;
+CREATE DEFINER=`root`@`localhost` TRIGGER Eliminar_RondaExtra
+AFTER DELETE ON rondaextra FOR EACH ROW
+BEGIN
+	-- Find username of person performing the INSERT into table
+	SELECT user INTO @UserMail FROM (
+        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+    WHERE userhost = USER();
+	INSERT INTO g12_logrondaextra VALUES ( DEFAULT,  @UserMail , 'DELETE', now(),old.dataHoraEntrada);
+END;
+
+DROP TRIGGER Inserir_Medicoes;
+CREATE DEFINER=`root`@`localhost` TRIGGER Inserir_Medicoes
+AFTER INSERT ON medicaosensores FOR EACH ROW
+BEGIN
+	-- Find username of person performing the INSERT into table
+	SELECT user INTO @UserMail FROM (
+        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+    WHERE userhost = USER();
+	INSERT INTO g12_logmedicaosensores VALUES ( DEFAULT, @UserMail ,'INSERT', now(),new.ValorMedicao, new.TipoSensor, new.DataHoraMedicao, new.PossivelAnomalia);
+END; 
+
+DROP TRIGGER Atualizar_Medicoes;
+CREATE DEFINER=`root`@`localhost` TRIGGER Atualizar_Medicoes
+AFTER UPDATE ON medicaosensores FOR EACH ROW
+BEGIN
+	-- Find username of person performing the INSERT into table
+	SELECT user INTO @UserMail FROM (
+        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+    WHERE userhost = USER();
+	INSERT INTO g12_logmedicaosensores VALUES (DEFAULT, @UserMail ,'UPDATE', now(),new.ValorMedicao, new.TipoSensor, new.DataHoraMedicao, new.PossivelAnomalia);
+END;  
+
+DROP TRIGGER Eliminar_Medicoes;
+CREATE DEFINER=`root`@`localhost` TRIGGER Eliminar_Medicoes
+AFTER DELETE ON medicaosensores FOR EACH ROW
+BEGIN
+	-- Find username of person performing the INSERT into table
+	SELECT user INTO @UserMail FROM (
+        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+    WHERE userhost = USER();
+	INSERT INTO g12_logmedicaosensores VALUES (DEFAULT, @UserMail ,'DELETE', now(),old.ValorMedicao, old.TipoSensor, old.DataHoraMedicao, old.PossivelAnomalia);
+END;
+ 
+DROP TRIGGER Inserir_Sistema;
+CREATE DEFINER=`root`@`localhost` TRIGGER Inserir_Sistema
+AFTER INSERT ON sistema FOR EACH ROW
+BEGIN
+	-- Find username of person performing the INSERT into table
+	SELECT user INTO @UserMail FROM (
+        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+    WHERE userhost = USER();
+	INSERT INTO g12_logsistema VALUES ( DEFAULT, @UserMail, 'INSERT', now(), new.IDSistema, new.LimiteTemperatura, new.LimiteHumidade, new.LimiteLuminosidade, new.LimiarTemperatura, new.LimiarHumidade, new.LimiarLuminosidade, new.DuraçãoPadrãoRonda, new.PeriocidadeImportacaoExportacao);
+END; 
+
+DROP TRIGGER Atualizar_Sistema;
+CREATE DEFINER=`root`@`localhost` TRIGGER Atualizar_Sistema
+AFTER UPDATE ON sistema FOR EACH ROW
+BEGIN
+	-- Find username of person performing the INSERT into table
+	SELECT user INTO @UserMail FROM (
+        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+    WHERE userhost = USER();
+	INSERT INTO g12_logsistema VALUES ( DEFAULT, @UserMail, 'UPDATE', now(), new.IDSistema, new.LimiteTemperatura, new.LimiteHumidade, new.LimiteLuminosidade, new.LimiarTemperatura, new.LimiarHumidade, new.LimiarLuminosidade, new.DuraçãoPadrãoRonda, new.PeriocidadeImportacaoExportacao);
+END;  
+
+DROP TRIGGER Eliminar_Sistema;
+CREATE DEFINER=`root`@`localhost` TRIGGER Eliminar_Sistema
+AFTER DELETE ON sistema FOR EACH ROW
+BEGIN
+	-- Find username of person performing the INSERT into table
+	SELECT user INTO @UserMail FROM (
+        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+    WHERE userhost = USER();
+	INSERT INTO g12_logsistema VALUES ( DEFAULT, @UserMail, 'DELETE', now(), old.IDSistema, old.LimiteTemperatura, old.LimiteHumidade, old.LimiteLuminosidade, old.LimiarTemperatura, old.LimiarHumidade, old.LimiarLuminosidade, old.DuraçãoPadrãoRonda, old.PeriocidadeImportacaoExportacao);
+END;
+
+DROP TRIGGER Inserir_DiaSemana;
+CREATE DEFINER=`root`@`localhost` TRIGGER Inserir_DiaSemana
+AFTER INSERT ON diasemana FOR EACH ROW
+BEGIN
+	-- Find username of person performing the INSERT into table
+	SELECT user INTO @UserMail FROM (
+        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+    WHERE userhost = USER();
+	INSERT INTO g12_logsdiasemana VALUES ( DEFAULT, @UserMail, 'INSERT', now(), new.DiaSemana, new.HoraRonda);
+END; 
+
+DROP TRIGGER Atualizar_DiaSemana;
+CREATE DEFINER=`root`@`localhost` TRIGGER Atualizar_DiaSemana
+AFTER UPDATE ON diasemana FOR EACH ROW
+BEGIN
+	-- Find username of person performing the INSERT into table
+	SELECT user INTO @UserMail FROM (
+        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+    WHERE userhost = USER();
+	INSERT INTO g12_logdiasemana VALUES ( DEFAULT, @UserMail, 'UPDATE', now(), new.DiaSemana, new.HoraRonda);
+END;  
+
+DROP TRIGGER Eliminar_DiaSemana;
+CREATE DEFINER=`root`@`localhost` TRIGGER Eliminar_DiaSemana
+AFTER DELETE ON diasemana FOR EACH ROW
+BEGIN
+	-- Find username of person performing the INSERT into table
+	SELECT user INTO @UserMail FROM (
+        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+    WHERE userhost = USER();
+	INSERT INTO g12_logdiasemana VALUES ( DEFAULT, @UserMail, 'DELETE', now(), old.DiaSemana, old.HoraRonda);
+END;
+ 
+ //
+DELIMITER ;
+

@@ -1,0 +1,134 @@
+NÃO com.jasml.decompiler.JavaClassParser	private void readConstantPool() throws java.io.IOException	constantPool	B2	0/41
+
+SIM com.jasml.compiler.SourceCodeParser	private com.jasml.classes.Method parseMethod() throws com.jasml.compiler.ParsingException, com.jasml.compiler.GrammerException	code	B4	0/15
+Refactoring
+
+NÃO com.jasml.compiler.SourceCodeParser	private void preprocessConstantValues() throws com.jasml.compiler.ParsingException	cpl	B2	0/14
+NÃO com.jasml.compiler.SourceCodeParser	private void preprocessConstantValues() throws com.jasml.compiler.ParsingException	cpl	B3	0/12
+NÃO com.jasml.compiler.SourceCodeParser	private void parseClassAttributes() throws com.jasml.compiler.GrammerException, com.jasml.compiler.ParsingException	colonIndex	B2	0/8
+NÃO com.jasml.compiler.SourceCodeParser	private void parseClassAttributes() throws com.jasml.compiler.GrammerException, com.jasml.compiler.ParsingException	nameIndex	B2	0/8
+NÃO com.jasml.compiler.SourceCodeParser	private void parseClassAttributes() throws com.jasml.compiler.GrammerException, com.jasml.compiler.ParsingException	s	B2	0/8
+NÃO com.jasml.compiler.SourceCodeParser	private void parseClassAttributes() throws com.jasml.compiler.GrammerException, com.jasml.compiler.ParsingException	scanner	B2	0/8
+NÃO com.jasml.compiler.SourceCodeParser	private void parseClassAttributes() throws com.jasml.compiler.GrammerException, com.jasml.compiler.ParsingException	scanner	B3	0/7
+NÃO com.jasml.compiler.ConstantPoolGenerator	private int addMethodNameAndType(java.lang.String, java.lang.String, java.lang.String) 	type	B1	0/4
+
+Sim jasml	private static void processFile(java.io.File) 	temp	B1	0/4
+Refactoring.
+
+NÃO jasml	private static void compile(java.io.File, java.io.File) 	jcd	B3	0/4
+
+SIM com.jasml.compiler.SourceCodeParser	private void updateLabelLinks(Hashtable#RAW, ArrayList#RAW) throws com.jasml.compiler.GrammerException	j	B9	0/3
+Refactoring
+
+NÃO com.jasml.compiler.Scanner	private void consumeDigits() 	c	B1	0/3
+NÃO com.jasml.compiler.Scanner	private void consumeDigits() 	c	B2	0/2
+NÃO com.jasml.compiler.Scanner	private void skipSpaces() 	c	B1	0/3
+NÃO com.jasml.compiler.Scanner	private void skipSpaces() 	c	B2	0/2
+
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute readAttribute(java.io.DataInputStream) throws java.io.IOException	exception_index_table	B21	0/3
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute readAttribute(java.io.DataInputStream) throws java.io.IOException	innerClasses	B26	0/3
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute readAttribute(java.io.DataInputStream) throws java.io.IOException	line_number_table	B32	0/3
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute readAttribute(java.io.DataInputStream) throws java.io.IOException	local_variable_table	B37	0/3
+Refactoring
+
+SIM com.jasml.compiler.SourceCodeParser	private com.jasml.classes.Field parseField() throws com.jasml.compiler.ParsingException, com.jasml.compiler.GrammerException	acc	B5	0/2
+SIM com.jasml.compiler.SourceCodeParser	private com.jasml.compiler.SourceCodeParser.LabeledInstructions parseMethodInstructions(com.jasml.classes.Method) throws com.jasml.compiler.ParsingException, com.jasml.compiler.GrammerException	j	B142	0/2
+SIM com.jasml.compiler.SourceCodeParser	private com.jasml.compiler.SourceCodeParser.LabeledInstructions parseMethodInstructions(com.jasml.classes.Method) throws com.jasml.compiler.ParsingException, com.jasml.compiler.GrammerException	t	B99	0/2
+NÃO com.jasml.compiler.SourceCodeParser	private void parseClass() throws com.jasml.compiler.ParsingException, com.jasml.compiler.GrammerException	javaClass	B7	0/2
+NÃO com.jasml.compiler.SourceCodeParser	private void parseClassAttributes() throws com.jasml.compiler.GrammerException, com.jasml.compiler.ParsingException	javaClass	B6	0/2
+SIM com.jasml.compiler.SourceCodeParser	private void parseClassSignature() throws com.jasml.compiler.ParsingException	acc	B3	0/2
+NÃO com.jasml.compiler.SourceCodeParser	private void parseFields() throws com.jasml.compiler.ParsingException, com.jasml.compiler.GrammerException	javaClass	B5	0/2
+SIM com.jasml.compiler.SourceCodeParser	private void parseMajorOrMinor() throws com.jasml.compiler.GrammerException, com.jasml.compiler.ParsingException	s	B3	0/2
+SIM com.jasml.compiler.SourceCodeParser	private void parseMethodSignature(com.jasml.classes.Method, ArrayList#RAW) throws com.jasml.compiler.ParsingException, com.jasml.compiler.GrammerException	acc	B3	0/2
+NÃO com.jasml.compiler.SourceCodeParser	private void parseMethods() throws com.jasml.compiler.ParsingException, com.jasml.compiler.GrammerException	javaClass	B5	0/2
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute readAttribute(java.io.DataInputStream) throws java.io.IOException	exceptionTable	B11	1/6
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute readAttribute(java.io.DataInputStream) throws java.io.IOException	exceptionTable	B12	0/3
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute readAttribute(java.io.DataInputStream) throws java.io.IOException	attributes	B15	1/6
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute readAttribute(java.io.DataInputStream) throws java.io.IOException	attributes	B16	0/3
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute readAttribute(java.io.DataInputStream) throws java.io.IOException	i	B1	1/6
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute readAttribute(java.io.DataInputStream) throws java.io.IOException	i	B2	0/3
+NÃO com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Field readField(java.io.DataInputStream) throws java.io.IOException	attributes	B1	1/6
+NÃO com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Field readField(java.io.DataInputStream) throws java.io.IOException	attributes	B2	0/3
+NÃO com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Method readMethod(java.io.DataInputStream) throws java.io.IOException	attributes	B1	1/6
+NÃO com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Method readMethod(java.io.DataInputStream) throws java.io.IOException	attributes	B2	0/3
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute readAttribute(java.io.DataInputStream) throws java.io.IOException	codes	B10	1/2
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute_Code.Opcode[] parseOpcodes(byte[]) 	defaultb	B25	3/6
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute_Code.Opcode[] parseOpcodes(byte[]) 	defaultb	B26	0/2
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute_Code.Opcode[] parseOpcodes(byte[]) 	defaultb	B6	3/6
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute_Code.Opcode[] parseOpcodes(byte[]) 	defaultb	B7	0/2
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute_Code.Opcode[] parseOpcodes(byte[]) 	npairb	B25	4/7
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute_Code.Opcode[] parseOpcodes(byte[]) 	npairb	B28	1/4
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute_Code.Opcode[] parseOpcodes(byte[]) 	npairb	B29	0/2
+NÃO com.jasml.decompiler.JavaClassParser	private void readConstantPool() throws java.io.IOException	items	B1	0/42
+NÃO com.jasml.decompiler.JavaClassParser	private void readConstantPool() throws java.io.IOException	items	B2	0/40
+NÃO com.jasml.decompiler.JavaClassParser	private void readConstantPool() throws java.io.IOException	items	B3	17/37
+NÃO com.jasml.decompiler.SourceCodeBuilder	private HashSet#RAW calculateReferences(com.jasml.classes.Method) 	ops	B1	0/5
+NÃO com.jasml.decompiler.SourceCodeBuilder	private HashSet#RAW calculateReferences(com.jasml.classes.Method) 	ops	B2	0/4
+NÃO com.jasml.decompiler.SourceCodeBuilder	private HashSet#RAW calculateReferences(com.jasml.classes.Method) 	ops	B3	1/2
+NÃO com.jasml.decompiler.SourceCodeBuilder	private java.lang.String toString(com.jasml.classes.Attribute_Code, HashSet#RAW) 	lvts	B1	0/5
+NÃO com.jasml.decompiler.SourceCodeBuilder	private java.lang.String toString(com.jasml.classes.Attribute_Code, HashSet#RAW) 	lvts	B2	0/4
+NÃO com.jasml.decompiler.SourceCodeBuilder	private java.lang.String toString(com.jasml.classes.Attribute_Code, HashSet#RAW) 	lvts	B3	1/2
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute_Code.Opcode[] parseOpcodes(byte[]) 	lowb	B6	4/7
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute_Code.Opcode[] parseOpcodes(byte[]) 	lowb	B9	1/4
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute_Code.Opcode[] parseOpcodes(byte[]) 	lowb	B10	0/2
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute_Code.Opcode[] parseOpcodes(byte[]) 	highb	B6	5/8
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute_Code.Opcode[] parseOpcodes(byte[]) 	highb	B9	2/5
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute_Code.Opcode[] parseOpcodes(byte[]) 	highb	B12	1/4
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute_Code.Opcode[] parseOpcodes(byte[]) 	highb	B13	0/2
+SIM com.jasml.compiler.SourceCodeParser	private void updateLabelLinks(Hashtable#RAW, ArrayList#RAW) throws com.jasml.compiler.GrammerException	counter	B3	6/22
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute_Code.Opcode[] parseOpcodes(byte[]) 	total	B6	11/16
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute_Code.Opcode[] parseOpcodes(byte[]) 	total	B9	8/13
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute_Code.Opcode[] parseOpcodes(byte[]) 	total	B10	6/11
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute_Code.Opcode[] parseOpcodes(byte[]) 	total	B12	4/9
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute_Code.Opcode[] parseOpcodes(byte[]) 	total	B13	2/7
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute_Code.Opcode[] parseOpcodes(byte[]) 	total	B15	0/5
+NÃO com.jasml.compiler.SourceCodeParser	private void parseMethodAttributes(com.jasml.classes.Method, ArrayList#RAW, com.jasml.compiler.SourceCodeParser.LabeledInstructions, com.jasml.classes.Attribute_Code, ArrayList#RAW) throws com.jasml.compiler.GrammerException, com.jasml.compiler.ParsingException	code	B5	6/16
+SIM com.jasml.compiler.JavaClassDumpper	private void dumpAttribute(com.jasml.classes.Attribute) throws java.io.IOException	operands	B6	1/2
+SIM com.jasml.decompiler.SourceCodeBuilder	private java.lang.String toString(com.jasml.classes.Attribute_Code, HashSet#RAW) 	operands	B7	1/2
+SIM com.jasml.decompiler.SourceCodeBuilder	private java.lang.String toString(com.jasml.classes.Attribute_Code, HashSet#RAW) 	soffset	B7	1/2
+SIM com.jasml.helper.OpcodeLoader	public static void main(java.lang.String[]) throws java.lang.Exception	op	B3	1/2
+SIM com.jasml.helper.OpcodeLoader	public void processOpcode(org.w3c.dom.Node) 	nodeName	B3	1/2
+NÃO com.jasml.helper.Util	public static void main(java.lang.String[]) 	i	B2	2/4
+NÃO com.jasml.helper.Util	public static java.lang.String parseViewableString(java.lang.String) 	ti	B4	15/24
+NÃO com.jasml.helper.Util	public static java.lang.String parseViewableString(java.lang.String) 	ti	B5	13/22
+NÃO com.jasml.helper.Util	public static java.lang.String parseViewableString(java.lang.String) 	ti	B13	5/14
+SIM com.jasml.helper.OpcodeLoader	public void processOpcode(org.w3c.dom.Node) 	clist	B3	15/24
+SIM com.jasml.helper.OpcodeLoader	public void processOpcode(org.w3c.dom.Node) 	clist	B5	12/21
+SIM com.jasml.helper.OpcodeLoader	public void processOpcode(org.w3c.dom.Node) 	clist	B7	11/20
+SIM com.jasml.helper.OpcodeLoader	public void processOpcode(org.w3c.dom.Node) 	clist	B9	10/19
+SIM com.jasml.helper.OpcodeLoader	public void processOpcode(org.w3c.dom.Node) 	clist	B11	9/18
+NÃO com.jasml.helper.Util	public static java.lang.String descriptorToString(java.lang.String) 	brackets	B13	4/6
+NÃo com.jasml.helper.Util	public static java.lang.String descriptorToString(java.lang.String) 	brackets	B14	2/3
+SIM com.jasml.helper.OpcodeLoader	public void processOpcode(org.w3c.dom.Node) 	attributes	B3	7/8
+SIM com.jasml.helper.OpcodeLoader	public void processOpcode(org.w3c.dom.Node) 	attributes	B5	4/5
+SIM com.jasml.helper.OpcodeLoader	public void processOpcode(org.w3c.dom.Node) 	attributes	B7	3/4
+SIM com.jasml.helper.OpcodeLoader	public void processOpcode(org.w3c.dom.Node) 	attributes	B9	2/3
+SIM com.jasml.helper.OpcodeLoader	public void processOpcode(org.w3c.dom.Node) 	attributes	B11	1/2
+SIM com.jasml.compiler.Scanner	private static void delComment(char[]) throws com.jasml.compiler.ParsingException	multiLineStarting	B1	32/34
+SIM com.jasml.compiler.Scanner	private static void delComment(char[]) throws com.jasml.compiler.ParsingException	multiLineStarting	B2	27/28
+SIM com.jasml.compiler.Scanner	private static void delComment(char[]) throws com.jasml.compiler.ParsingException	multiLineStarting	B3	7/8
+SIM com.jasml.compiler.Scanner	private static void delComment(char[]) throws com.jasml.compiler.ParsingException	multiLineStarting	B8	5/6
+SIM com.jasml.compiler.Scanner	private static void delComment(char[]) throws com.jasml.compiler.ParsingException	multiLineStarting	B10	4/5
+SIM com.jasml.compiler.Scanner	private static void delComment(char[]) throws com.jasml.compiler.ParsingException	multiLineStarting	B14	3/4
+SIM com.jasml.compiler.Scanner	private static void delComment(char[]) throws com.jasml.compiler.ParsingException	multiLineStarting	B18	2/3
+SIM com.jasml.compiler.Scanner	private static void delComment(char[]) throws com.jasml.compiler.ParsingException	multiLineStarting	B19	1/2
+SIM com.jasml.compiler.SourceCodeParser	private void parseMaxStackOrLocals(com.jasml.classes.Attribute_Code) throws com.jasml.compiler.ParsingException	code	B1	8/10
+SIM com.jasml.compiler.SourceCodeParser	private void updateLabelLinks(Hashtable#RAW, ArrayList#RAW) throws com.jasml.compiler.GrammerException	list	B3	8/10
+NÃO com.jasml.compiler.Scanner	public static void main(java.lang.String[]) throws java.lang.Exception	sc	B1	5/6
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute_Code.Opcode[] parseOpcodes(byte[]) 	op	B3	27/32
+SIM com.jasml.decompiler.JavaClassParser	private com.jasml.classes.Attribute_Code.Opcode[] parseOpcodes(byte[]) 	op	B3	27/32
+SIM com.jasml.helper.Util	public static java.lang.String methodParameterToString(java.lang.String) 	brackets	B5	14/16
+SIM com.jasml.decompiler.SourceCodeBuilder	private java.lang.String toString(com.jasml.classes.Attribute_Code, HashSet#RAW) 	def	B7	17/19
+SIM com.jasml.decompiler.SourceCodeBuilder	private java.lang.String toString(com.jasml.classes.Attribute_Code, HashSet#RAW) 	def	B12	15/17
+SIM com.jasml.helper.Util	public static java.lang.String methodParameterToString(java.lang.String) 	ti	B5	16/18
+SIM com.jasml.decompiler.SourceCodeBuilder	private java.lang.String toString(com.jasml.classes.Attribute_Code, HashSet#RAW) 	ti	B7	27/29
+SIM com.jasml.decompiler.SourceCodeBuilder	private java.lang.String toString(com.jasml.classes.Attribute_Code, HashSet#RAW) 	ti	B12	25/27
+SIM com.jasml.compiler.SourceCodeParser	private void updateLabelLinks(Hashtable#RAW, ArrayList#RAW) throws com.jasml.compiler.GrammerException	label	B3	26/28
+SIM com.jasml.decompiler.SourceCodeBuilder	private java.lang.String toString(com.jasml.classes.Attribute_Code, HashSet#RAW) 	high	B7	16/17
+SIM com.jasml.decompiler.SourceCodeBuilder	private java.lang.String toString(com.jasml.classes.Attribute_Code, HashSet#RAW) 	high	B12	14/15
+SIM com.jasml.decompiler.SourceCodeBuilder	private java.lang.String toString(com.jasml.classes.Attribute_Code, HashSet#RAW) 	low	B7	16/17
+SIM com.jasml.decompiler.SourceCodeBuilder	private java.lang.String toString(com.jasml.classes.Attribute_Code, HashSet#RAW) 	low	B12	14/15
+SIM com.jasml.decompiler.SourceCodeBuilder	private java.lang.String toString(com.jasml.classes.Attribute_Code, HashSet#RAW) 	npairs	B7	16/17
+SIM com.jasml.decompiler.SourceCodeBuilder	private java.lang.String toString(com.jasml.classes.Attribute_Code, HashSet#RAW) 	npairs	B12	14/15
+SIM com.jasml.decompiler.SourceCodeBuilder	private java.lang.String toString(com.jasml.classes.Attribute_Code, HashSet#RAW) 	jump_count	B7	18/19
+SIM com.jasml.decompiler.SourceCodeBuilder	private java.lang.String toString(com.jasml.classes.Attribute_Code, HashSet#RAW) 	jump_count	B12	16/17

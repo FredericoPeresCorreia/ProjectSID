@@ -1,0 +1,1248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+- phpMyAdmin XML Dump
+- version 5.0.2
+- https://www.phpmyadmin.net
+-
+- Host: 127.0.0.1
+- Generation Time: Apr 15, 2020 at 01:50 PM
+- Server version: 10.4.11-MariaDB
+- PHP Version: 7.4.4
+-->
+
+<pma_xml_export version="1.0" xmlns:pma="https://www.phpmyadmin.net/some_doc_url/">
+    <!--
+    - Structure schemas
+    -->
+    <pma:structure_schemas>
+        <pma:database name="museum" collation="utf8mb4_general_ci" charset="utf8mb4">
+            <pma:table name="alerta">
+                CREATE TABLE `alerta` (
+                  `idalerta` int(11) NOT NULL,
+                  `IDMedicao` int(11) DEFAULT NULL,
+                  `TipoAlerta` varchar(3) NOT NULL,
+                  `DataHoraAlerta` timestamp NOT NULL DEFAULT current_timestamp(),
+                  PRIMARY KEY (`idalerta`),
+                  KEY `IDMedicao` (`IDMedicao`),
+                  CONSTRAINT `alerta_ibfk_1` FOREIGN KEY (`IDMedicao`) REFERENCES `medicaosensores` (`idMedicao`) ON DELETE CASCADE
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            </pma:table>
+            <pma:trigger name="Atualizar_Alerta">
+                CREATE TRIGGER `Atualizar_Alerta` AFTER UPDATE ON `alerta`
+                 FOR EACH ROW BEGIN
+                	## Find username of person performing the INSERT into table
+                	SELECT user INTO @UserMail FROM (
+                        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+                    WHERE userhost = USER();
+                	SELECT TipoUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserTipoC;
+                	SELECT NomeUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserNomeC;
+                    IF(@UserMail ='root') THEN 
+                        SELECT 'root' INTO @UserTipoC;
+                        SELECT 'root' INTO @UserNomeC;
+                    END IF;
+                	SELECT ValorMedicao, TipoSensor, DataHoraMedicao from medicaosensores where new.IDMedicao = IDMedicao INTO @ValorMedicao, @TipoSensor, @DataHoraMedicao;
+                    INSERT INTO logalerta VALUES ( DEFAULT, new.idalerta, new.TipoAlerta, new.DataHoraAlerta, new.IDMedicao, @ValorMedicao, @TipoSensor, @DataHoraMedicao, @UserMail , @UserNomeC, @UserTipoC, now(), 'INSERT',DEFAULT);
+                END
+            </pma:trigger>
+            <pma:trigger name="Eliminar_Alerta">
+                CREATE TRIGGER `Eliminar_Alerta` AFTER DELETE ON `alerta`
+                 FOR EACH ROW BEGIN
+                	## Find username of person performing the INSERT into table
+                	SELECT user INTO @UserMail FROM (
+                        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+                    WHERE userhost = USER();
+                	SELECT TipoUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserTipoC;
+                	SELECT NomeUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserNomeC;
+                    IF(@UserMail ='root') THEN 
+                        SELECT 'root' INTO @UserTipoC;
+                        SELECT 'root' INTO @UserNomeC;
+                    END IF;
+                	SELECT ValorMedicao, TipoSensor, DataHoraMedicao from medicaosensores where old.IDMedicao = IDMedicao INTO @ValorMedicao, @TipoSensor, @DataHoraMedicao;
+                    INSERT INTO logalerta VALUES ( DEFAULT, old.idalerta, old.TipoAlerta, old.DataHoraAlerta, old.IDMedicao, @ValorMedicao, @TipoSensor, @DataHoraMedicao, @UserMail , @UserNomeC, @UserTipoC, now(), 'INSERT',DEFAULT);
+                END
+            </pma:trigger>
+            <pma:trigger name="Inserir_Alerta">
+                CREATE TRIGGER `Inserir_Alerta` AFTER INSERT ON `alerta`
+                 FOR EACH ROW BEGIN
+                	## Find username of person performing the INSERT into table
+                	SELECT user INTO @UserMail FROM (
+                        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+                    WHERE userhost = USER();
+                	SELECT TipoUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserTipoC;
+                	SELECT NomeUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserNomeC;
+                    IF(@UserMail ='root') THEN 
+                        SELECT 'root' INTO @UserTipoC;
+                        SELECT 'root' INTO @UserNomeC;
+                    END IF;
+                	SELECT ValorMedicao, TipoSensor, DataHoraMedicao from medicaosensores where new.IDMedicao = IDMedicao INTO @ValorMedicao, @TipoSensor, @DataHoraMedicao;
+                    INSERT INTO logalerta VALUES ( DEFAULT, new.idalerta, new.TipoAlerta, new.DataHoraAlerta, new.IDMedicao, @ValorMedicao, @TipoSensor, @DataHoraMedicao, @UserMail , @UserNomeC, @UserTipoC, now(), 'INSERT',DEFAULT);
+                END
+            </pma:trigger>
+            <pma:table name="cartao">
+                CREATE TABLE `cartao` (
+                  `idCartao` varchar(20) NOT NULL,
+                  `EmailUtilizador` varchar(100) NOT NULL,
+                  `Ativo` tinyint(1) DEFAULT NULL,
+                  PRIMARY KEY (`idCartao`),
+                  KEY `EmailUtilizador` (`EmailUtilizador`),
+                  CONSTRAINT `cartao_ibfk_1` FOREIGN KEY (`EmailUtilizador`) REFERENCES `utilizador` (`EmailUtilizador`) ON DELETE CASCADE ON UPDATE CASCADE
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            </pma:table>
+            <pma:trigger name="Atualizar_Cartao">
+                CREATE TRIGGER `Atualizar_Cartao` AFTER UPDATE ON `cartao`
+                 FOR EACH ROW BEGIN
+                	## Find username of person performing the INSERT into table
+                	SELECT user INTO @UserMail FROM (
+                        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+                    WHERE userhost = USER();
+                	SELECT TipoUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserTipoC;
+                	SELECT NomeUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserNomeC;
+                    SELECT TipoUtilizador from utilizador where EmailUtilizador = new.EmailUtilizador INTO @UserTipo;
+                	SELECT NomeUtilizador from utilizador where EmailUtilizador = new.EmailUtilizador INTO @UserNome;
+                    IF(@UserMail ='root') THEN 
+                        SELECT 'root' INTO @UserTipoC;
+                        SELECT 'root' INTO @UserNomeC;
+                    END IF;
+                	INSERT INTO logcartao VALUES ( DEFAULT, new.idCartao, new.Ativo,new.EmailUtilizador, @UserNome, @UserTipo, @UserMail ,@UserNomeC, @UserTipoC, now(), 'UPDATE',DEFAULT);
+                END
+            </pma:trigger>
+            <pma:trigger name="Eliminar_Cartao">
+                CREATE TRIGGER `Eliminar_Cartao` AFTER DELETE ON `cartao`
+                 FOR EACH ROW BEGIN
+                	## Find username of person performing the INSERT into table
+                	SELECT user INTO @UserMail FROM (
+                        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+                    WHERE userhost = USER();
+                	SELECT TipoUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserTipoC;
+                	SELECT NomeUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserNomeC;
+                    SELECT TipoUtilizador from utilizador where EmailUtilizador = old.EmailUtilizador INTO @UserTipo;
+                	SELECT NomeUtilizador from utilizador where EmailUtilizador = old.EmailUtilizador INTO @UserNome;
+                    IF(@UserMail ='root') THEN 
+                        SELECT 'root' INTO @UserTipoC;
+                        SELECT 'root' INTO @UserNomeC;
+                    END IF;
+                	INSERT INTO logcartao VALUES ( DEFAULT, old.idCartao, old.Ativo, old.EmailUtilizador, @UserNome, @UserTipo, @UserMail ,@UserNomeC, @UserTipoC, now(), 'DELETE',DEFAULT);
+                END
+            </pma:trigger>
+            <pma:trigger name="Inserir_Cartao">
+                CREATE TRIGGER `Inserir_Cartao` AFTER INSERT ON `cartao`
+                 FOR EACH ROW BEGIN
+                	## Find username of person performing the INSERT into table
+                	SELECT user INTO @UserMail FROM (
+                        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+                    WHERE userhost = USER();
+                	SELECT TipoUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserTipoC;
+                	SELECT NomeUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserNomeC;
+                    SELECT TipoUtilizador from utilizador where EmailUtilizador = new.EmailUtilizador INTO @UserTipo;
+                	SELECT NomeUtilizador from utilizador where EmailUtilizador = new.EmailUtilizador INTO @UserNome;
+                    IF(@UserMail ='root') THEN 
+                        SELECT 'root' INTO @UserTipoC;
+                        SELECT 'root' INTO @UserNomeC;
+                    END IF;
+                	INSERT INTO logcartao VALUES ( DEFAULT, new.idCartao, new.Ativo, new.EmailUtilizador, @UserNome, @UserTipo, @UserMail ,@UserNomeC, @UserTipoC, now(), 'INSERT',DEFAULT);
+                END
+            </pma:trigger>
+            <pma:table name="diasemana">
+                CREATE TABLE `diasemana` (
+                  `DiaSemana` varchar(20) NOT NULL,
+                  `HoraRonda` time NOT NULL,
+                  PRIMARY KEY (`DiaSemana`,`HoraRonda`),
+                  KEY `HoraRonda` (`HoraRonda`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            </pma:table>
+            <pma:table name="logalerta">
+                CREATE TABLE `logalerta` (
+                  `idlogAlerta` int(11) NOT NULL AUTO_INCREMENT,
+                  `IDAlerta` int(11) NOT NULL,
+                  `TipoAlerta` varchar(3) NOT NULL,
+                  `DataHoraAlerta` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+                  `IDMedicao` int(11) NOT NULL,
+                  `ValorMedicao` decimal(6,2) NOT NULL,
+                  `TipoSensor` varchar(3) NOT NULL,
+                  `DataHoraMedicao` timestamp NOT NULL DEFAULT current_timestamp(),
+                  `EmailUtilizadorConsultor` varchar(100) NOT NULL,
+                  `NomeUtilizadorConsultor` varchar(200) NOT NULL,
+                  `TipoUtilizadorConsultor` varchar(3) NOT NULL,
+                  `Data` timestamp NOT NULL DEFAULT current_timestamp(),
+                  `Comando` varchar(200) NOT NULL,
+                  `Resultado` text DEFAULT NULL,
+                  PRIMARY KEY (`idlogAlerta`),
+                  UNIQUE KEY `IDAlerta` (`IDAlerta`,`DataHoraAlerta`,`IDMedicao`,`DataHoraMedicao`,`Data`),
+                  UNIQUE KEY `IDAlerta_2` (`IDAlerta`,`DataHoraAlerta`,`IDMedicao`,`DataHoraMedicao`,`Data`)
+                ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+            </pma:table>
+            <pma:table name="logcartao">
+                CREATE TABLE `logcartao` (
+                  `idlogCartao` int(11) NOT NULL AUTO_INCREMENT,
+                  `idCartao` varchar(20) NOT NULL,
+                  `Ativo` tinyint(4) NOT NULL,
+                  `EmailUtilizador` varchar(100) NOT NULL,
+                  `NomeUtilizador` varchar(200) NOT NULL,
+                  `TipoUtilizador` varchar(3) NOT NULL,
+                  `EmailUtilizadorConsultor` varchar(100) NOT NULL,
+                  `NomeUtilizadorConsultor` varchar(200) NOT NULL,
+                  `TipoUtilizadorConsultor` varchar(3) NOT NULL,
+                  `Data` timestamp NOT NULL DEFAULT current_timestamp(),
+                  `Comando` varchar(200) NOT NULL,
+                  `Resultado` text DEFAULT NULL,
+                  PRIMARY KEY (`idlogCartao`)
+                ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4;
+            </pma:table>
+            <pma:table name="logmedicaosensores">
+                CREATE TABLE `logmedicaosensores` (
+                  `idLogMedicao` int(11) NOT NULL AUTO_INCREMENT,
+                  `IDmedicao` int(11) NOT NULL,
+                  `TipoSensor` varchar(3) NOT NULL,
+                  `DataHoraMedicao` datetime NOT NULL,
+                  `EmailUtilizadorConsultor` varchar(100) NOT NULL,
+                  `NomeUtilizadorConsultor` varchar(200) NOT NULL,
+                  `TipoUtilizadorConsultor` varchar(3) NOT NULL,
+                  `Data` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+                  `Comando` varchar(200) NOT NULL,
+                  `Resultado` text DEFAULT NULL,
+                  `PossivelAnomalia` tinyint(4) NOT NULL,
+                  PRIMARY KEY (`idLogMedicao`),
+                  UNIQUE KEY `IDmedicao` (`IDmedicao`,`Data`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            </pma:table>
+            <pma:table name="logronda">
+                CREATE TABLE `logronda` (
+                  `idlogRonda` int(11) NOT NULL AUTO_INCREMENT,
+                  `DiaSemana` varchar(20) NOT NULL,
+                  `HoraRonda` time NOT NULL,
+                  `Duracao` int(11) NOT NULL,
+                  `EmailUtilizador` varchar(100) NOT NULL,
+                  `NomeUtilizador` varchar(200) NOT NULL,
+                  `TipoUtilizador` varchar(3) NOT NULL,
+                  `EmailUtilizadorConsultor` varchar(100) NOT NULL,
+                  `NomeUtilizadorConsultor` varchar(200) NOT NULL,
+                  `TipoUtilizadorConsultor` varchar(3) NOT NULL,
+                  `Data` timestamp NOT NULL DEFAULT current_timestamp(),
+                  `Comando` varchar(200) NOT NULL,
+                  `Resultado` text DEFAULT NULL,
+                  PRIMARY KEY (`idlogRonda`),
+                  UNIQUE KEY `Data` (`Data`)
+                ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+            </pma:table>
+            <pma:table name="logrondaextra">
+                CREATE TABLE `logrondaextra` (
+                  `idlogRondaExtra` int(11) NOT NULL AUTO_INCREMENT,
+                  `DataHora` timestamp NOT NULL DEFAULT current_timestamp(),
+                  `EmailUtilizador` varchar(100) NOT NULL,
+                  `NomeUtilizador` varchar(200) NOT NULL,
+                  `TipoUtilizador` varchar(3) NOT NULL,
+                  `EmailUtilizadorConsultor` varchar(100) NOT NULL,
+                  `NomeUtilizadorConsultor` varchar(200) NOT NULL,
+                  `TipoUtilizadorConsultor` varchar(3) NOT NULL,
+                  `Data` timestamp NOT NULL DEFAULT current_timestamp(),
+                  `Comando` varchar(200) NOT NULL,
+                  `Resultado` text DEFAULT NULL,
+                  PRIMARY KEY (`idlogRondaExtra`),
+                  UNIQUE KEY `DataHora` (`DataHora`,`Data`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            </pma:table>
+            <pma:table name="logsistema">
+                CREATE TABLE `logsistema` (
+                  `idlogSistema` int(11) NOT NULL AUTO_INCREMENT,
+                  `IDSistema` int(11) NOT NULL,
+                  `LimiteTemperatura` decimal(6,2) NOT NULL,
+                  `LimiteHumidade` decimal(6,2) NOT NULL,
+                  `LimiteLuminosidade` decimal(6,2) NOT NULL,
+                  `LimiarTemperatura` decimal(6,2) NOT NULL,
+                  `LimiarHumidade` decimal(6,2) NOT NULL,
+                  `LimiarLuminosidade` decimal(6,2) NOT NULL,
+                  `DuracaoPadraoRonda` int(11) NOT NULL,
+                  `EmailUtilizadorConsultor` varchar(100) NOT NULL,
+                  `NomeUtilizadorConsultor` varchar(200) NOT NULL,
+                  `TipoUtilizadorConsultor` varchar(3) NOT NULL,
+                  `Data` timestamp NOT NULL DEFAULT current_timestamp(),
+                  `Comando` varchar(200) NOT NULL,
+                  `Resultado` text DEFAULT NULL,
+                  PRIMARY KEY (`idlogSistema`),
+                  UNIQUE KEY `IDSistema` (`IDSistema`,`Data`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            </pma:table>
+            <pma:table name="logutilizador">
+                CREATE TABLE `logutilizador` (
+                  `idlogUtilizador` int(11) NOT NULL AUTO_INCREMENT,
+                  `EmailUtilizadorConsultado` varchar(100) NOT NULL,
+                  `NomeUtilizadorConsultado` varchar(200) NOT NULL,
+                  `TipoUtilizadorConsultado` varchar(3) NOT NULL,
+                  `EmailUtilizadorConsultor` varchar(100) NOT NULL,
+                  `NomeUtilizadorConsultor` varchar(200) NOT NULL,
+                  `TipoUtilizadorConsultor` varchar(3) NOT NULL,
+                  `Data` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+                  `Comando` varchar(200) NOT NULL,
+                  `Resultado` text DEFAULT NULL,
+                  PRIMARY KEY (`idlogUtilizador`)
+                ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+            </pma:table>
+            <pma:table name="medicaosensores">
+                CREATE TABLE `medicaosensores` (
+                  `idMedicao` int(11) NOT NULL,
+                  `ValorMedicao` decimal(6,2) NOT NULL,
+                  `TipoSensor` varchar(3) NOT NULL,
+                  `DataHoraMedicao` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+                  `PossivelAnomalia` tinyint(4) NOT NULL,
+                  PRIMARY KEY (`idMedicao`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            </pma:table>
+            <pma:trigger name="Atualizar_Medicoes">
+                CREATE TRIGGER `Atualizar_Medicoes` AFTER UPDATE ON `medicaosensores`
+                 FOR EACH ROW BEGIN
+                	## Find username of person performing the INSERT into table
+                	SELECT user INTO @UserMail FROM (
+                        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+                    WHERE userhost = USER();
+                	SELECT TipoUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserTipoC;
+                	SELECT NomeUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserNomeC;
+                    IF(@UserMail ='root') THEN 
+                        SELECT 'root' INTO @UserTipoC;
+                        SELECT 'root' INTO @UserNomeC;
+                    END IF;
+                	INSERT INTO logmedicaosensores VALUES ( DEFAULT, new.idMedicao, new.TipoSensor, new.DataHoraMedicao, @UserMail ,@UserNomeC, @UserTipoC, now(), 'UPDATE',DEFAULT,new.PossivelAnomalia);
+                END
+            </pma:trigger>
+            <pma:trigger name="Eliminar_Medicoes">
+                CREATE TRIGGER `Eliminar_Medicoes` AFTER DELETE ON `medicaosensores`
+                 FOR EACH ROW BEGIN
+                	## Find username of person performing the INSERT into table
+                	SELECT user INTO @UserMail FROM (
+                        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+                    WHERE userhost = USER();
+                	SELECT TipoUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserTipoC;
+                	SELECT NomeUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserNomeC;
+                    IF(@UserMail ='root') THEN 
+                        SELECT 'root' INTO @UserTipoC;
+                        SELECT 'root' INTO @UserNomeC;
+                    END IF;
+                	INSERT INTO logmedicaosensores VALUES ( DEFAULT, old.idMedicao, old.TipoSensor, old.DataHoraMedicao, @UserMail ,@UserNomeC, @UserTipoC, now(), 'DELETE',DEFAULT,old.PossivelAnomalia);
+                END
+            </pma:trigger>
+            <pma:trigger name="Inserir_Medicoes">
+                CREATE TRIGGER `Inserir_Medicoes` AFTER INSERT ON `medicaosensores`
+                 FOR EACH ROW BEGIN
+                	## Find username of person performing the INSERT into table
+                	SELECT user INTO @UserMail FROM (
+                        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+                    WHERE userhost = USER();
+                	SELECT TipoUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserTipoC;
+                	SELECT NomeUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserNomeC;
+                    IF(@UserMail ='root') THEN 
+                        SELECT 'root' INTO @UserTipoC;
+                        SELECT 'root' INTO @UserNomeC;
+                    END IF;
+                	INSERT INTO logmedicaosensores VALUES ( DEFAULT, new.idMedicao, new.TipoSensor, new.DataHoraMedicao, @UserMail ,@UserNomeC, @UserTipoC, now(), 'INSERT',DEFAULT,new.PossivelAnomalia);
+                END
+            </pma:trigger>
+            <pma:table name="rondaextra">
+                CREATE TABLE `rondaextra` (
+                  `dataHoraEntrada` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+                  `EmailUtilizador` varchar(100) NOT NULL,
+                  `datahoraSaida` timestamp NULL DEFAULT NULL,
+                  PRIMARY KEY (`dataHoraEntrada`),
+                  KEY `EmailUtilizador` (`EmailUtilizador`),
+                  CONSTRAINT `rondaextra_ibfk_1` FOREIGN KEY (`EmailUtilizador`) REFERENCES `utilizador` (`EmailUtilizador`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            </pma:table>
+            <pma:trigger name="Atualizar_RondaExtra">
+                CREATE TRIGGER `Atualizar_RondaExtra` AFTER UPDATE ON `rondaextra`
+                 FOR EACH ROW BEGIN
+                	## Find username of person performing the INSERT into table
+                	SELECT user INTO @UserMail FROM (
+                        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+                    WHERE userhost = USER();
+                	SELECT TipoUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserTipoC;
+                	SELECT NomeUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserNomeC;
+                    SELECT TipoUtilizador from utilizador where EmailUtilizador = new.EmailUtilizador INTO @UserTipo;
+                	SELECT NomeUtilizador from utilizador where EmailUtilizador = new.EmailUtilizador INTO @UserNome;
+                    IF(@UserMail ='root') THEN 
+                        SELECT 'root' INTO @UserTipoC;
+                        SELECT 'root' INTO @UserNomeC;
+                    END IF;
+                	INSERT INTO logrondaextra VALUES ( DEFAULT, new.DataHoraEntrada, new.EmailUtilizador, @UserNome, @UserTipo, @UserMail ,@UserNomeC, @UserTipoC, now(), 'UPDATE',DEFAULT);
+                END
+            </pma:trigger>
+            <pma:trigger name="Eliminar_RondaExtra">
+                CREATE TRIGGER `Eliminar_RondaExtra` AFTER DELETE ON `rondaextra`
+                 FOR EACH ROW BEGIN
+                	## Find username of person performing the INSERT into table
+                	SELECT user INTO @UserMail FROM (
+                        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+                    WHERE userhost = USER();
+                	SELECT TipoUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserTipoC;
+                	SELECT NomeUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserNomeC;
+                    SELECT TipoUtilizador from utilizador where EmailUtilizador = old.EmailUtilizador INTO @UserTipo;
+                	SELECT NomeUtilizador from utilizador where EmailUtilizador = old.EmailUtilizador INTO @UserNome;
+                    IF(@UserMail ='root') THEN 
+                        SELECT 'root' INTO @UserTipoC;
+                        SELECT 'root' INTO @UserNomeC;
+                    END IF;
+                	INSERT INTO logrondaextra VALUES ( DEFAULT, old.DataHoraEntrada, old.EmailUtilizador, @UserNome, @UserTipo, @UserMail ,@UserNomeC, @UserTipoC, now(), 'DELETE',DEFAULT);
+                END
+            </pma:trigger>
+            <pma:trigger name="Inserir_RondaExtra">
+                CREATE TRIGGER `Inserir_RondaExtra` AFTER INSERT ON `rondaextra`
+                 FOR EACH ROW BEGIN
+                	## Find username of person performing the INSERT into table
+                	SELECT user INTO @UserMail FROM (
+                        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+                    WHERE userhost = USER();
+                	SELECT TipoUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserTipoC;
+                	SELECT NomeUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserNomeC;
+                    SELECT TipoUtilizador from utilizador where EmailUtilizador = new.EmailUtilizador INTO @UserTipo;
+                	SELECT NomeUtilizador from utilizador where EmailUtilizador = new.EmailUtilizador INTO @UserNome;
+                    IF(@UserMail ='root') THEN 
+                        SELECT 'root' INTO @UserTipoC;
+                        SELECT 'root' INTO @UserNomeC;
+                    END IF;
+                	INSERT INTO logrondaextra VALUES ( DEFAULT, new.DataHoraEntrada, new.EmailUtilizador, @UserNome, @UserTipo, @UserMail ,@UserNomeC, @UserTipoC, now(), 'INSERT',DEFAULT);
+                END
+            </pma:trigger>
+            <pma:table name="ronda_planeada">
+                CREATE TABLE `ronda_planeada` (
+                  `EmailUtilizador` varchar(100) NOT NULL,
+                  `DiaSemana` varchar(20) NOT NULL,
+                  `HoraRondaInicio` time NOT NULL,
+                  KEY `DiaSemana` (`DiaSemana`),
+                  KEY `EmailUtilizador` (`EmailUtilizador`),
+                  KEY `HoraRondaInicio` (`HoraRondaInicio`),
+                  CONSTRAINT `ronda_planeada_ibfk_1` FOREIGN KEY (`DiaSemana`) REFERENCES `diasemana` (`DiaSemana`) ON DELETE CASCADE ON UPDATE CASCADE,
+                  CONSTRAINT `ronda_planeada_ibfk_2` FOREIGN KEY (`EmailUtilizador`) REFERENCES `utilizador` (`EmailUtilizador`) ON DELETE CASCADE,
+                  CONSTRAINT `ronda_planeada_ibfk_3` FOREIGN KEY (`HoraRondaInicio`) REFERENCES `diasemana` (`HoraRonda`) ON DELETE CASCADE ON UPDATE CASCADE
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            </pma:table>
+            <pma:table name="sistema">
+                CREATE TABLE `sistema` (
+                  `IDSistema` int(11) NOT NULL,
+                  `LimiteTemperatura` decimal(6,2) NOT NULL,
+                  `LimiteHumidade` decimal(6,2) NOT NULL,
+                  `LimiteLuminosidade` decimal(6,2) NOT NULL,
+                  `LimiarTemperatura` decimal(6,2) NOT NULL,
+                  `LimiarHumidade` decimal(6,2) NOT NULL,
+                  `LimiarLuminosidade` decimal(6,2) NOT NULL,
+                  `DuraçãoPadrãoRonda` int(11) NOT NULL,
+                  `PeriocidadeImportacaoExportacao` int(11) NOT NULL,
+                  PRIMARY KEY (`IDSistema`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            </pma:table>
+            <pma:trigger name="Atualizar_Sistema">
+                CREATE TRIGGER `Atualizar_Sistema` AFTER UPDATE ON `sistema`
+                 FOR EACH ROW BEGIN
+                	## Find username of person performing the INSERT into table
+                	SELECT user INTO @UserMail FROM (
+                        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+                    WHERE userhost = USER();
+                	SELECT TipoUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserTipoC;
+                	SELECT NomeUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserNomeC;
+                    IF(@UserMail ='root') THEN 
+                        SELECT 'root' INTO @UserTipoC;
+                        SELECT 'root' INTO @UserNomeC;
+                    END IF;
+                	INSERT INTO logsistema VALUES ( DEFAULT, new.IDSistema, new.LimiteTemperatura, new.LimiteHumidade, new.LimiteLuminosidade, new.LimiarTemperatura, new.LimiarHumidade, new.LimiarLuminosidade, new.DuraçãoPadrãoRonda, @UserMail ,@UserNomeC, @UserTipoC, now(), 'INSERT',DEFAULT);
+                END
+            </pma:trigger>
+            <pma:trigger name="Eliminar_Sistema">
+                CREATE TRIGGER `Eliminar_Sistema` AFTER DELETE ON `sistema`
+                 FOR EACH ROW BEGIN
+                	## Find username of person performing the INSERT into table
+                	SELECT user INTO @UserMail FROM (
+                        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+                    WHERE userhost = USER();
+                	SELECT TipoUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserTipoC;
+                	SELECT NomeUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserNomeC;
+                    IF(@UserMail ='root') THEN 
+                        SELECT 'root' INTO @UserTipoC;
+                        SELECT 'root' INTO @UserNomeC;
+                    END IF;
+                	INSERT INTO logsistema VALUES ( DEFAULT, old.IDSistema, old.LimiteTemperatura, old.LimiteHumidade, old.LimiteLuminosidade, old.LimiarTemperatura, old.LimiarHumidade, old.LimiarLuminosidade, old.DuraçãoPadrãoRonda, @UserMail ,@UserNomeC, @UserTipoC, now(), 'INSERT',DEFAULT);
+                END
+            </pma:trigger>
+            <pma:trigger name="Inserir_Sistema">
+                CREATE TRIGGER `Inserir_Sistema` AFTER INSERT ON `sistema`
+                 FOR EACH ROW BEGIN
+                	## Find username of person performing the INSERT into table
+                	SELECT user INTO @UserMail FROM (
+                        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+                    WHERE userhost = USER();
+                	SELECT TipoUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserTipoC;
+                	SELECT NomeUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserNomeC;
+                    IF(@UserMail ='root') THEN 
+                        SELECT 'root' INTO @UserTipoC;
+                        SELECT 'root' INTO @UserNomeC;
+                    END IF;
+                	INSERT INTO logsistema VALUES ( DEFAULT, new.IDSistema, new.LimiteTemperatura, new.LimiteHumidade, new.LimiteLuminosidade, new.LimiarTemperatura, new.LimiarHumidade, new.LimiarLuminosidade, new.DuraçãoPadrãoRonda, @UserMail ,@UserNomeC, @UserTipoC, now(), 'INSERT',DEFAULT);
+                END
+            </pma:trigger>
+            <pma:table name="utilizador">
+                CREATE TABLE `utilizador` (
+                  `EmailUtilizador` varchar(100) NOT NULL,
+                  `NomeUtilizador` varchar(200) NOT NULL,
+                  `TipoUtilizador` varchar(3) NOT NULL,
+                  `Password` varchar(10) NOT NULL,
+                  PRIMARY KEY (`EmailUtilizador`),
+                  KEY `EmailUtilizador` (`EmailUtilizador`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            </pma:table>
+            <pma:trigger name="Atualizar_Utilizador">
+                CREATE TRIGGER `Atualizar_Utilizador` AFTER UPDATE ON `utilizador`
+                 FOR EACH ROW BEGIN
+                	## Find username of person performing the INSERT into table
+                	SELECT user INTO @UserMail FROM (
+                        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+                    WHERE userhost = USER();
+                	SELECT TipoUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserTipo;
+                	SELECT NomeUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserNome;
+                    IF(@UserMail ='root') THEN 
+                        SELECT 'root' INTO @UserTipo;
+                        SELECT 'root' INTO @UserNome;
+                    END IF;
+                	INSERT INTO logutilizador VALUES ( DEFAULT, new.EmailUtilizador, new.NomeUtilizador, new.TipoUtilizador, @UserMail ,@UserNome, @UserTipo, now(), 'UPDATE',DEFAULT);
+                END
+            </pma:trigger>
+            <pma:trigger name="Eliminar_Utilizador">
+                CREATE TRIGGER `Eliminar_Utilizador` AFTER DELETE ON `utilizador`
+                 FOR EACH ROW BEGIN
+                	## Find username of person performing the INSERT into table
+                	SELECT user INTO @UserMail FROM (
+                        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+                    WHERE userhost = USER();
+                	SELECT TipoUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserTipo;
+                	SELECT NomeUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserNome;
+                    IF(@UserMail ='root') THEN 
+                        SELECT 'root' INTO @UserTipo;
+                        SELECT 'root' INTO @UserNome;
+                    END IF;
+                	INSERT INTO logutilizador VALUES ( DEFAULT, old.EmailUtilizador, old.NomeUtilizador, old.TipoUtilizador, @UserMail ,@UserNome, @UserTipo, now(), 'DELETE',DEFAULT);
+                END
+            </pma:trigger>
+            <pma:trigger name="Inserir_Utilizador">
+                CREATE TRIGGER `Inserir_Utilizador` AFTER INSERT ON `utilizador`
+                 FOR EACH ROW BEGIN
+                	## Find username of person performing the INSERT into table
+                	SELECT user INTO @UserMail FROM (
+                        SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+                    WHERE userhost = USER();
+                	SELECT TipoUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserTipo;
+                	SELECT NomeUtilizador from utilizador where EmailUtilizador = @UserMail INTO @UserNome;
+                    IF(@UserMail ='root') THEN 
+                        SELECT 'root' INTO @UserTipo;
+                        SELECT 'root' INTO @UserNome;
+                    END IF;
+                	INSERT INTO logutilizador VALUES ( DEFAULT, new.EmailUtilizador, new.NomeUtilizador, new.TipoUtilizador, @UserMail ,@UserNome, @UserTipo, now(), 'INSERT',DEFAULT);
+                END
+            </pma:trigger>
+            <pma:procedure name="AlterarUtilizador">
+                CREATE DEFINER=`root`@`localhost` PROCEDURE `AlterarUtilizador`(`Mail` VARCHAR(100), `nEmail` VARCHAR(100), `nNome` VARCHAR(200), `nTipo` VARCHAR(3), `nPass` VARCHAR(10))
+                BEGIN
+                	SELECT user INTO @userId FROM (
+                		SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+                    WHERE userhost = USER();
+                	SELECT default_role INTO @role FROM (
+                        SELECT default_role, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+                    WHERE userhost = USER();
+                    IF(CURRENT_ROLE = 'seguranca' OR @role= 'seguranca') THEN 
+                		IF(Mail = @userID) THEN
+                			IF(NOT(nNome = 'NULL')) THEN
+                				UPDATE utilizador
+                                SET NomeUtilizador = nNome WHERE EmailUtilizador = @userId;
+                			END IF;
+                            IF(NOT(nPass = 'NULL')) THEN
+                				UPDATE utilizador
+                                SET utilizador.Password = nPass  WHERE EmailUtilizador = @userId;
+                                SET @sql := CONCAT('ALTER USER ','''', Mail,'''','@localhost', ' IDENTIFIED BY ', '''', nPass,'''');
+                				PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                			END IF;
+                            IF(NOT(nEmail = 'NULL')) THEN
+                				UPDATE utilizador
+                                SET EmailUtilizador = nEmail WHERE EmailUtilizador = @userId;
+                                SET @sql := CONCAT('FLUSH PRIVILEGES');
+                                PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                                SET @sql := CONCAT('RENAME USER ', '''', Mail,'''', '@localhost',' TO ','''', nEmail,'''','@localhost');
+                				PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                			END IF;
+                        
+                        END IF;
+                		
+                    ELSEIF(CURRENT_ROLE = 'chefe_seguranca' OR @role= 'chefe_seguranca') THEN 
+                		IF(Mail = @userID) THEN
+                			IF(NOT(nNome = 'NULL')) THEN
+                				UPDATE utilizador
+                                SET NomeUtilizador = nNome WHERE EmailUtilizador = @userId;
+                			END IF;
+                            IF(NOT(nPass = 'NULL')) THEN
+                				UPDATE utilizador
+                                SET utilizador.Password = nPass  WHERE EmailUtilizador = @userId;
+                                SET @sql := CONCAT('ALTER USER ','''', Mail,'''','@localhost', ' IDENTIFIED BY ', '''', nPass,'''');
+                				PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                			END IF;
+                            IF(NOT(nEmail = 'NULL')) THEN
+                				UPDATE utilizador
+                                SET EmailUtilizador = nEmail WHERE EmailUtilizador = @userId;
+                                SET @sql := CONCAT('FLUSH PRIVILEGES');
+                                PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                                SET @sql := CONCAT('RENAME USER ', '''', Mail,'''', '@localhost',' TO ','''', nEmail,'''','@localhost');
+                				PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                			END IF;
+                        ELSE
+                			SELECT TipoUtilizador FROM utilizador WHERE EmailUtilizador = Mail INTO @Tipppo;
+                            IF (@Tipppo = 'SEG') THEN
+                				IF(NOT(nNome = 'NULL')) THEN
+                					UPDATE utilizador
+                					SET NomeUtilizador = nNome WHERE EmailUtilizador = Mail;
+                				END IF;
+                				IF(NOT(nPass = 'NULL')) THEN
+                					UPDATE utilizador
+                					SET utilizador.Password = nPass  WHERE EmailUtilizador = Mail;
+                					SET @sql := CONCAT('ALTER USER ','''', Mail,'''','@localhost', ' IDENTIFIED BY ', '''', nPass,'''');
+                					PREPARE stmt FROM @sql;
+                					EXECUTE stmt;
+                				END IF;
+                				IF(NOT(nEmail = 'NULL')) THEN
+                					UPDATE utilizador
+                					SET EmailUtilizador = nEmail WHERE EmailUtilizador = Mail;
+                					SET @sql := CONCAT('FLUSH PRIVILEGES');
+                					PREPARE stmt FROM @sql;
+                					EXECUTE stmt;
+                					SET @sql := CONCAT('RENAME USER ', '''', Mail,'''', '@localhost',' TO ','''', nEmail,'''','@localhost');
+                					PREPARE stmt FROM @sql;
+                					EXECUTE stmt;
+                				END IF;
+                			END IF;	
+                        END IF;
+                	ELSE 
+                		IF(NOT(nNome = 'NULL')) THEN
+                				UPDATE utilizador
+                                SET NomeUtilizador = nNome WHERE EmailUtilizador = Mail;
+                		END IF;
+                		IF(NOT(nPass = 'NULL')) THEN
+                			UPDATE utilizador
+                			SET utilizador.Password = nPass  WHERE EmailUtilizador = Mail;
+                			SET @sql := CONCAT('ALTER USER ','''', Mail,'''','@localhost', ' IDENTIFIED BY ', '''', nPass,'''');
+                			PREPARE stmt FROM @sql;
+                			EXECUTE stmt;
+                		END IF;
+                        IF(NOT(nTipo = 'NULL')) THEN
+                			IF(nTipo = 'SEG') THEN
+                				UPDATE utilizador
+                				SET TipoUtilizador = nTipo WHERE EmailUtilizador = Mail;
+                				SET @sql := CONCAT('GRANT seguranca TO ', '''', Mail,'''', '@localhost');
+                				PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                				DEALLOCATE PREPARE stmt;
+                				SET @sql := CONCAT('SET DEFAULT ROLE seguranca FOR ', '''', Mail,'''', '@localhost');
+                				PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                				DEALLOCATE PREPARE stmt;
+                			ELSEIF(nTipo = 'CSG') THEN
+                				UPDATE utilizador
+                				SET TipoUtilizador = nTipo WHERE EmailUtilizador = Mail;
+                				SET @sql := CONCAT('GRANT chefe_seguranca TO ', '''', Mail,'''', '@localhost');
+                				PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                				DEALLOCATE PREPARE stmt;
+                				SET @sql := CONCAT('SET DEFAULT ROLE chefe_seguranca FOR ', '''', Mail,'''', '@localhost');
+                				PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                				DEALLOCATE PREPARE stmt;
+                			ELSEIF(nTipo = 'AUD') THEN
+                				UPDATE utilizador
+                				SET TipoUtilizador = nTipo WHERE EmailUtilizador = Mail;
+                				SET @sql := CONCAT('GRANT auditor TO ', '''', Mail,'''', '@localhost');
+                				PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                				DEALLOCATE PREPARE stmt;
+                				SET @sql := CONCAT('SET DEFAULT ROLE auditor FOR ', '''', Mail,'''', '@localhost');
+                				PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                				DEALLOCATE PREPARE stmt;
+                			ELSEIF(nTipo = 'ADM') THEN
+                				UPDATE utilizador
+                				SET TipoUtilizador = nTipo WHERE EmailUtilizador = Mail;
+                				SET @sql := CONCAT('GRANT admnistrador TO ', '''', Mail,'''', '@localhost');
+                				PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                				DEALLOCATE PREPARE stmt;
+                				SET @sql := CONCAT('SET DEFAULT ROLE admnistrador FOR ', '''', Mail,'''', '@localhost');
+                				PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                				DEALLOCATE PREPARE stmt;
+                			ELSEIF(nTipo = 'DIR') THEN
+                				UPDATE utilizador
+                				SET TipoUtilizador = nTipo WHERE EmailUtilizador = Mail;
+                				SET @sql := CONCAT('GRANT diretor TO ', '''', Mail,'''', '@localhost');
+                				PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                				DEALLOCATE PREPARE stmt;
+                				SET @sql := CONCAT('SET DEFAULT ROLE diretor FOR ', '''', Mail,'''', '@localhost');
+                				PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                				DEALLOCATE PREPARE stmt;
+                			END IF;
+                		END IF;
+                		IF(NOT(nEmail = 'NULL')) THEN
+                				UPDATE utilizador
+                                SET EmailUtilizador = nEmail WHERE EmailUtilizador = Mail;
+                                SET @sql := CONCAT('FLUSH PRIVILEGES');
+                                PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                                SET @sql := CONCAT('RENAME USER ', '''', Mail,'''', '@localhost',' TO ','''', nEmail,'''','@localhost');
+                				PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                		END IF;
+                        
+                    END IF;
+                
+                END
+            </pma:procedure>
+            <pma:procedure name="ConsultarAlertas">
+                CREATE DEFINER=`root`@`localhost` PROCEDURE `ConsultarAlertas`(`idAlertaCheck` INT)
+                BEGIN
+                	IF ( idAlertaCheck = 'NULL') THEN
+                		SELECT * FROM alerta;
+                	ELSE
+                		SELECT * FROM alerta WHERE idalerta = idAlertaCheck;
+                	END IF;
+                END
+            </pma:procedure>
+            <pma:procedure name="ConsultarCartao">
+                CREATE DEFINER=`root`@`localhost` PROCEDURE `ConsultarCartao`(`mailUtilizador` VARCHAR(100))
+                BEGIN
+                	IF ( mailUtilizador = 'NULL') THEN
+                		SELECT * FROM cartao;
+                	ELSE
+                		SELECT * FROM cartao WHERE EmailUtilizador = mailUtilizador;
+                	END IF;
+                END
+            </pma:procedure>
+            <pma:procedure name="ConsultarMedicoesSensores">
+                CREATE DEFINER=`root`@`localhost` PROCEDURE `ConsultarMedicoesSensores`(`idMedicaoCheck` INT)
+                BEGIN
+                	IF ( idMedicaoCheck = 'NULL') THEN
+                		SELECT * FROM medicaosensores;
+                	ELSE
+                		SELECT * FROM medicaosensores WHERE idMedicao = idMedicaoCheck;
+                	END IF;
+                END
+            </pma:procedure>
+            <pma:procedure name="ConsultarRonda">
+                CREATE DEFINER=`root`@`localhost` PROCEDURE `ConsultarRonda`(`DiaSemanaCheck` VARCHAR(20), `HoraRonda` TIME)
+                BEGIN
+                IF ( DiaSemanaCheck = 'NULL' AND HoraRonda = 'NULL') THEN
+                		SELECT * FROM ronda_planeada;
+                	ELSE
+                		SELECT * FROM ronda_planeada WHERE DiaSemana = DiaSemanaCheck AND HoraRondaInicio = HoraRonda;
+                	END IF;
+                END
+            </pma:procedure>
+            <pma:procedure name="ConsultarRondaExtra">
+                CREATE DEFINER=`root`@`localhost` PROCEDURE `ConsultarRondaExtra`(`mailUtilizador` VARCHAR(100))
+                BEGIN
+                	IF ( mailUtilizador = 'NULL') THEN
+                		SELECT * FROM rondaextra;
+                	ELSE
+                		SELECT * FROM rondaextra WHERE EmailUtilizador = mailUtilizador;
+                	END IF;
+                END
+            </pma:procedure>
+            <pma:procedure name="ConsultarSistema">
+                CREATE DEFINER=`root`@`localhost` PROCEDURE `ConsultarSistema`(`idSistemaCheck` INT)
+                BEGIN
+                	IF ( idSistemaCheck = 'NULL') THEN
+                		SELECT * FROM sistema;
+                	ELSE
+                		SELECT * FROM sistema WHERE IDSistema = idSistemaCheck;
+                	END IF;
+                END
+            </pma:procedure>
+            <pma:procedure name="ConsultarUtilizador">
+                CREATE DEFINER=`root`@`localhost` PROCEDURE `ConsultarUtilizador`(`Email` VARCHAR(100))
+                BEGIN
+                	SELECT user INTO @userId FROM (
+                		SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+                    WHERE userhost = USER();
+                	SELECT default_role INTO @role FROM (
+                        SELECT default_role, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+                    WHERE userhost = USER();
+                	 IF(CURRENT_ROLE = 'chefe_seguranca' OR @role= 'chefe_seguranca') THEN
+                		SELECT NomeUtilizador FROM utilizador WHERE EmailUtilizador = Email INTO @Nomee;
+                        SELECT TipoUtilizador FROM utilizador WHERE EmailUtilizador = Email INTO @Tipoo;
+                        SELECT NomeUtilizador FROM utilizador WHERE EmailUtilizador = @userId INTO @cNomee;
+                        SELECT TipoUtilizador FROM utilizador WHERE EmailUtilizador = @userId INTO @cTipoo;
+                		IF (Email = 'NULL') Then
+                			SELECT * FROM utilizador where (TipoUtilizador = 'SEG' OR EmailUtilizador = @userId);
+                            INSERT INTO logutilizador VALUES ( DEFAULT, &quot;NULL&quot;, &quot;NULL&quot;, &quot;NULL&quot;, @useriD ,@cNomee, @cTipoo, now(), 'CONSULTA',DEFAULT);
+                		ELSEIF ( Email = @userId) THEN
+                			SELECT * FROM utilizador where (EmailUtilizador = @userId);
+                            INSERT INTO logutilizador VALUES ( DEFAULT, Email, @Nomee, @Tipoo, @userId ,@cNomee, @cTipoo, now(), 'CONSULTA',DEFAULT);
+                		ELSE 
+                			SELECT * FROM utilizador where (EmailUtilizador = Email AND TipoUtilizador = 'SEG');
+                            INSERT INTO logutilizador VALUES ( DEFAULT, Email, @Nomee, @Tipoo, @userId ,@cNomee, @cTipoo, now(), 'CONSULTA',DEFAULT);
+                        END IF;
+                	ELSEIF(CURRENT_ROLE = 'seguranca' OR @role= 'seguranca') THEN 
+                		SELECT NomeUtilizador FROM utilizador WHERE EmailUtilizador = Email INTO @Nomee;
+                        SELECT TipoUtilizador FROM utilizador WHERE EmailUtilizador = Email INTO @Tipoo;
+                        SELECT NomeUtilizador FROM utilizador WHERE EmailUtilizador = @userId INTO @cNomee;
+                        SELECT TipoUtilizador FROM utilizador WHERE EmailUtilizador = @userId INTO @cTipoo;
+                		IF (Email = 'NULL') Then
+                			SELECT * FROM utilizador where (EmailUtilizador = @userId);
+                            INSERT INTO logutilizador VALUES ( DEFAULT, &quot;NULL&quot;, &quot;NULL&quot;, &quot;NULL&quot;, @useriD ,@cNomee, @cTipoo, now(), 'CONSULTA',DEFAULT);
+                		ELSEIF ( Email = @userId) THEN
+                			SELECT * FROM utilizador where (EmailUtilizador = @userId);
+                            INSERT INTO logutilizador VALUES ( DEFAULT, Email, @Nomee, @Tipoo, @userId ,@cNomee, @cTipoo, now(), 'CONSULTA',DEFAULT);
+                		ELSE
+                			SELECT * FROM utilizador where (EmailUtilizador = @userId AND EmailUtilizador = Email);
+                        END IF;
+                	ELSEIF(CURRENT_ROLE = 'diretor' OR @role= 'diretor' OR CURRENT_ROLE = 'admnistrador' OR @role= 'admnistrador') THEN
+                		SELECT NomeUtilizador FROM utilizador WHERE EmailUtilizador = Email INTO @Nomee;
+                        SELECT TipoUtilizador FROM utilizador WHERE EmailUtilizador = Email INTO @Tipoo;
+                        SELECT NomeUtilizador FROM utilizador WHERE EmailUtilizador = @userId INTO @cNomee;
+                        SELECT TipoUtilizador FROM utilizador WHERE EmailUtilizador = @userId INTO @cTipoo;
+                        IF (Email = 'NULL') Then
+                			SELECT * FROM utilizador;
+                             INSERT INTO logutilizador VALUES ( DEFAULT, &quot;NULL&quot;, &quot;NULL&quot;, &quot;NULL&quot;, @useriD ,@cNomee, @cTipoo, now(), 'CONSULTA',DEFAULT);
+                		ELSE
+                			SELECT * FROM utilizador where (EmailUtilizador = Email);
+                            INSERT INTO logutilizador VALUES ( DEFAULT, Email, @Nomee, @Tipoo, @userId ,@cNomee, @cTipoo, now(), 'CONSULTA',DEFAULT);
+                		END IF;
+                            
+                	END IF;
+                END
+            </pma:procedure>
+            <pma:procedure name="exportar">
+                CREATE DEFINER=`root`@`localhost` PROCEDURE `exportar`()
+                BEGIN
+                
+                DECLARE tipo_operacao varchar(50);
+                DECLARE estado varchar(50);
+                DECLARE data timestamp;
+                DECLARE ficheiro varchar(50);
+                DECLARE data_inicio timestamp;
+                DECLARE data_fim timestamp;
+                DECLARE numero_entradas int;
+                DECLARE numero_entradas_total int;
+                DECLARE data_inicio_SP timestamp;
+                DECLARE data_fim_SP TIMESTAMP;
+                DECLARE id_novo int;
+                DECLARE numero_entradas_novo int;
+                DECLARE numero_entradas_total_novo int;
+                DECLARE agendada_extra varchar(50) DEFAULT 'AGENDADA';
+                DECLARE agora TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+                
+                
+                
+                SELECT test_export_result.tipo_operacao INTO tipo_operacao FROM test_export_result ORDER BY test_export_result.tipo_operacao DESC LIMIT 1;
+                SELECT test_export_result.estado INTO estado FROM test_export_result ORDER BY test_export_result.tipo_operacao DESC LIMIT 1;
+                SELECT test_export_result.data INTO data FROM test_export_result ORDER BY test_export_result.tipo_operacao DESC LIMIT 1;
+                SELECT test_export_result.ficheiro INTO ficheiro FROM test_export_result ORDER BY test_export_result.tipo_operacao DESC LIMIT 1;
+                SELECT test_export_result.data_inicio INTO data_inicio FROM test_export_result ORDER BY test_export_result.tipo_operacao DESC LIMIT 1;
+                SELECT test_export_result.data_fim INTO data_fim FROM test_export_result ORDER BY test_export_result.tipo_operacao DESC LIMIT 1;
+                SELECT test_export_result.numero_entradas INTO numero_entradas FROM test_export_result ORDER BY test_export_result.tipo_operacao DESC LIMIT 1;
+                SELECT test_export_result.numero_entradas_total INTO numero_entradas_total FROM test_export_result ORDER BY test_export_result.tipo_operacao DESC LIMIT 1;
+                SET id_novo = tipo_operacao + 1;
+                
+                CASE estado
+                	WHEN 'OK' THEN 
+                	
+                SET numero_entradas_novo = (SELECT COUNT(*) FROM (SELECT 'logalerta',logalerta.idlogAlerta,logalerta.IDAlerta,logalerta.TipoAlerta,logalerta.DataHoraAlerta,logalerta.IDMedicao,logalerta.ValorMedicao,logalerta.TipoSensor,logalerta.DataHoraMedicao,logalerta.EmailUtilizadorConsultor,logalerta.NomeUtilizadorConsultor,logalerta.TipoUtilizadorConsultor,logalerta.Data,logalerta.Comando,logalerta.Resultado, ''  from logalerta WHERE data &lt; logalerta.data UNION SELECT 'logcartao',logcartao.idlogCartao, logcartao.idCartao, logcartao.Ativo, logcartao.EmailUtilizador, logcartao.NomeUtilizador, logcartao.TipoUtilizador, logcartao.EmailUtilizadorConsultor, logcartao.NomeUtilizadorConsultor, logcartao.TipoUtilizadorConsultor, logcartao.Data,logcartao.Comando,logcartao.Resultado, '','','' FROM logcartao WHERE data &lt; logcartao.data UNION SELECT 'logmedicaosensores',logmedicaosensores.idLogMedicao, logmedicaosensores.IDmedicao, logmedicaosensores.TipoSensor,logmedicaosensores.DataHoraMedicao,logmedicaosensores.EmailUtilizadorConsultor,logmedicaosensores.NomeUtilizadorConsultor,logmedicaosensores.TipoUtilizadorConsultor,logmedicaosensores.Data,logmedicaosensores.Comando, logmedicaosensores.Resultado, logmedicaosensores.PossivelAnomalia, '', '', '', '' FROM logmedicaosensores  WHERE data &lt; logmedicaosensores.data UNION SELECT 'logronda', logronda.idlogRonda, logronda.DiaSemana, logronda.HoraRonda, logronda.Duracao, logronda.EmailUtilizador, logronda.NomeUtilizador, logronda.TipoUtilizador, logronda.EmailUtilizadorConsultor, logronda.NomeUtilizadorConsultor, logronda.TipoUtilizadorConsultor, logronda.Data, logronda.Comando, logronda.Resultado, '', '' from logronda  WHERE data &lt; logronda.data UNION SELECT 'logrondaextra',logrondaextra.idlogRondaExtra, logrondaextra.DataHora, logrondaextra.EmailUtilizador, logrondaextra.NomeUtilizador, logrondaextra.TipoUtilizador, logrondaextra.EmailUtilizadorConsultor, logrondaextra.NomeUtilizadorConsultor, logrondaextra.TipoUtilizadorConsultor, logrondaextra.Data, logrondaextra.Comando, logrondaextra.Resultado,'','','','' from logrondaextra  WHERE data &lt; logrondaextra.data UNION SELECT 'logsistema',logsistema.idlogSistema, logsistema.IDSistema, logsistema.LimiteTemperatura, logsistema.LimiteHumidade, logsistema.LimiteLuminosidade, logsistema.LimiarTemperatura, logsistema.LimiarHumidade, logsistema.LimiarLuminosidade, logsistema.DuracaoPadraoRonda, logsistema.EmailUtilizadorConsultor,logsistema.NomeUtilizadorConsultor, logsistema.TipoUtilizadorConsultor, logsistema.Data, logsistema.Comando, logsistema.Resultado from logsistema  WHERE data &lt; logsistema.data UNION
+                SELECT 'logutilizador', logutilizador.idlogUtilizador, logutilizador.EmailUtilizadorConsultado, logutilizador.NomeUtilizadorConsultado, logutilizador.TipoUtilizadorConsultado, logutilizador.EmailUtilizadorConsultor, logutilizador.NomeUtilizadorConsultor, logutilizador.TipoUtilizadorConsultor, logutilizador.Data, logutilizador.Comando, logutilizador.Resultado, '' , '' ,'', '', ''  from logutilizador  WHERE data &lt; logutilizador.data) AS numero_entradas_novo);
+                SET numero_entradas_total_novo = numero_entradas_novo + numero_entradas_total;
+                
+                SELECT 'logalerta',logalerta.idlogAlerta AS '',logalerta.IDAlerta,logalerta.TipoAlerta AS '',logalerta.DataHoraAlerta AS '',logalerta.IDMedicao  AS '',logalerta.ValorMedicao AS '',logalerta.TipoSensor AS '',logalerta.DataHoraMedicao AS '',logalerta.EmailUtilizadorConsultor AS '',logalerta.NomeUtilizadorConsultor AS '',logalerta.TipoUtilizadorConsultor AS '',logalerta.Data AS '',logalerta.Comando AS '',logalerta.Resultado AS '', ''  from logalerta WHERE data &lt; logalerta.data UNION SELECT 'logcartao',logcartao.idlogCartao AS '', logcartao.idCartao AS '', logcartao.Ativo AS '', logcartao.EmailUtilizador AS '', logcartao.NomeUtilizador AS '', logcartao.TipoUtilizador AS '', logcartao.EmailUtilizadorConsultor AS '', logcartao.NomeUtilizadorConsultor AS '', logcartao.TipoUtilizadorConsultor AS '', logcartao.Data AS '',logcartao.Comando AS '',logcartao.Resultado AS '', '','','' FROM logcartao WHERE data &lt; logcartao.data UNION SELECT 'logmedicaosensores',logmedicaosensores.idLogMedicao AS '', logmedicaosensores.IDmedicao AS '', logmedicaosensores.TipoSensor AS '',logmedicaosensores.DataHoraMedicao AS '',logmedicaosensores.EmailUtilizadorConsultor AS '',logmedicaosensores.NomeUtilizadorConsultor AS '',logmedicaosensores.TipoUtilizadorConsultor AS '',logmedicaosensores.Data AS '',logmedicaosensores.Comando AS '', logmedicaosensores.Resultado AS '', logmedicaosensores.PossivelAnomalia AS '', '', '', '', '' FROM logmedicaosensores  WHERE data &lt; logmedicaosensores.data UNION SELECT 'logronda', logronda.idlogRonda AS '', logronda.DiaSemana AS '', logronda.HoraRonda AS '', logronda.Duracao AS '', logronda.EmailUtilizador AS '', logronda.NomeUtilizador AS '', logronda.TipoUtilizador AS '', logronda.EmailUtilizadorConsultor AS '', logronda.NomeUtilizadorConsultor AS '', logronda.TipoUtilizadorConsultor AS '', logronda.Data AS '', logronda.Comando AS '', logronda.Resultado, '', '' from logronda  WHERE data &lt; logronda.data UNION SELECT 'logrondaextra',logrondaextra.idlogRondaExtra AS '', logrondaextra.DataHora AS '', logrondaextra.EmailUtilizador AS '', logrondaextra.NomeUtilizador AS '', logrondaextra.TipoUtilizador AS '', logrondaextra.EmailUtilizadorConsultor AS '', logrondaextra.NomeUtilizadorConsultor AS '', logrondaextra.TipoUtilizadorConsultor AS '', logrondaextra.Data AS '', logrondaextra.Comando AS '', logrondaextra.Resultado AS '','','','',''  from logrondaextra  WHERE data &lt; logrondaextra.data UNION SELECT 'logsistema',logsistema.idlogSistema AS '', logsistema.IDSistema AS '', logsistema.LimiteTemperatura AS '', logsistema.LimiteHumidade AS '', logsistema.LimiteLuminosidade AS '', logsistema.LimiarTemperatura AS '', logsistema.LimiarHumidade AS '', logsistema.LimiarLuminosidade AS '', logsistema.DuracaoPadraoRonda AS '', logsistema.EmailUtilizadorConsultor AS '',logsistema.NomeUtilizadorConsultor AS '', logsistema.TipoUtilizadorConsultor AS '', logsistema.Data AS '', logsistema.Comando AS '', logsistema.Resultado AS '' from logsistema  WHERE data &lt; logsistema.data UNION
+                SELECT 'logutilizador', logutilizador.idlogUtilizador AS '', logutilizador.EmailUtilizadorConsultado AS '', logutilizador.NomeUtilizadorConsultado AS '', logutilizador.TipoUtilizadorConsultado AS '', logutilizador.EmailUtilizadorConsultor AS '', logutilizador.NomeUtilizadorConsultor AS '', logutilizador.TipoUtilizadorConsultor AS '', logutilizador.Data AS '', logutilizador.Comando AS '', logutilizador.Resultado AS '', '' , '' ,'', '', ''  from logutilizador  WHERE data &lt; logutilizador.data 
+                UNION SELECT id_novo ,agendada_extra,agora,ficheiro,numero_entradas_total_novo, numero_entradas_novo,'','','','','','','','','','' 
+                
+                INTO OUTFILE &quot;C:/xampp/htdocs/ProjetoSIDESII/implementacao_g15/origin_server/log_export/ficheiro_exportacao.csv&quot;
+                FIELDS TERMINATED BY ';'
+                ENCLOSED BY '&quot;'
+                LINES TERMINATED BY '\n';
+                
+                WHEN 'EXTRA' THEN 
+                 	SET agendada_extra = 'EXTRA';
+                	IF data_inicio IS NULL AND data_fim IS NOT NULL THEN SET data_inicio_SP = '1970-00-00 00:00:01' ; SET data_fim_SP = data_fim; ELSEIF
+                     data_fim IS NULL AND data_inicio IS NOT NULL  THEN  SET data_fim_SP = CURRENT_TIMESTAMP; SET data_inicio_SP = data_inicio; 
+                     ELSE  SET data_inicio_SP = data_inicio ; SET data_fim_SP = data_fim; END IF;
+                     SET numero_entradas_novo = (SELECT COUNT(*) FROM (SELECT 'logalerta',logalerta.idlogAlerta,logalerta.IDAlerta,logalerta.TipoAlerta,logalerta.DataHoraAlerta,logalerta.IDMedicao,logalerta.ValorMedicao,logalerta.TipoSensor,logalerta.DataHoraMedicao,logalerta.EmailUtilizadorConsultor,logalerta.NomeUtilizadorConsultor,logalerta.TipoUtilizadorConsultor,logalerta.Data,logalerta.Comando,logalerta.Resultado, ''  from logalerta WHERE data_fim_SP &gt; logalerta.data AND data_inicio_SP &lt; logalerta.data UNION SELECT 'logcartao',logcartao.idlogCartao, logcartao.idCartao, logcartao.Ativo, logcartao.EmailUtilizador, logcartao.NomeUtilizador, logcartao.TipoUtilizador, logcartao.EmailUtilizadorConsultor, logcartao.NomeUtilizadorConsultor, logcartao.TipoUtilizadorConsultor, logcartao.Data,logcartao.Comando,logcartao.Resultado, '','','' FROM logcartao WHERE data_fim_SP &gt; logcartao.data AND data_inicio_SP &lt; logcartao.data UNION SELECT 'logmedicaosensores',logmedicaosensores.idLogMedicao, logmedicaosensores.IDmedicao, logmedicaosensores.TipoSensor,logmedicaosensores.DataHoraMedicao,logmedicaosensores.EmailUtilizadorConsultor,logmedicaosensores.NomeUtilizadorConsultor,logmedicaosensores.TipoUtilizadorConsultor,logmedicaosensores.Data,logmedicaosensores.Comando, logmedicaosensores.Resultado, logmedicaosensores.PossivelAnomalia, '', '', '', '' FROM logmedicaosensores  WHERE data_fim_SP &gt; logmedicaosensores.data AND data_inicio_SP &lt; logmedicaosensores.data  UNION SELECT 'logronda', logronda.idlogRonda, logronda.DiaSemana, logronda.HoraRonda, logronda.Duracao, logronda.EmailUtilizador, logronda.NomeUtilizador, logronda.TipoUtilizador, logronda.EmailUtilizadorConsultor, logronda.NomeUtilizadorConsultor, logronda.TipoUtilizadorConsultor, logronda.Data, logronda.Comando, logronda.Resultado, '', '' from logronda  where data_fim_SP &gt; logronda.data AND data_inicio_SP &lt; logronda.data UNION SELECT 'logrondaextra',logrondaextra.idlogRondaExtra, logrondaextra.DataHora, logrondaextra.EmailUtilizador, logrondaextra.NomeUtilizador, logrondaextra.TipoUtilizador, logrondaextra.EmailUtilizadorConsultor, logrondaextra.NomeUtilizadorConsultor, logrondaextra.TipoUtilizadorConsultor, logrondaextra.Data, logrondaextra.Comando, logrondaextra.Resultado,'','','','' from logrondaextra  WHERE data_fim_SP &gt; logrondaextra.data AND data_inicio_SP &lt; logrondaextra.data UNION SELECT 'logsistema',logsistema.idlogSistema, logsistema.IDSistema, logsistema.LimiteTemperatura, logsistema.LimiteHumidade, logsistema.LimiteLuminosidade, logsistema.LimiarTemperatura, logsistema.LimiarHumidade, logsistema.LimiarLuminosidade, logsistema.DuracaoPadraoRonda, logsistema.EmailUtilizadorConsultor,logsistema.NomeUtilizadorConsultor, logsistema.TipoUtilizadorConsultor, logsistema.Data, logsistema.Comando, logsistema.Resultado from logsistema  WHERE data_fim_SP &gt; logsistema.data AND data_inicio_SP &lt; logsistema.data UNION
+                SELECT 'logutilizador', logutilizador.idlogUtilizador, logutilizador.EmailUtilizadorConsultado, logutilizador.NomeUtilizadorConsultado, logutilizador.TipoUtilizadorConsultado, logutilizador.EmailUtilizadorConsultor, logutilizador.NomeUtilizadorConsultor, logutilizador.TipoUtilizadorConsultor, logutilizador.Data, logutilizador.Comando, logutilizador.Resultado, '' , '' ,'', '', ''  from logutilizador  WHERE data_fim_SP &gt; logutilizador.data AND data_inicio_SP &lt; logutilizador.data) AS numero_entradas_novo);
+                SET numero_entradas_total_novo = numero_entradas_novo + numero_entradas_total;
+                
+                     SELECT 'logalerta',logalerta.idlogAlerta AS '',logalerta.IDAlerta,logalerta.TipoAlerta AS '',logalerta.DataHoraAlerta AS '',logalerta.IDMedicao  AS '',logalerta.ValorMedicao AS '',logalerta.TipoSensor AS '',logalerta.DataHoraMedicao AS '',logalerta.EmailUtilizadorConsultor AS '',logalerta.NomeUtilizadorConsultor AS '',logalerta.TipoUtilizadorConsultor AS '',logalerta.Data AS '',logalerta.Comando AS '',logalerta.Resultado AS '', ''  from logalerta WHERE data_fim_SP &gt; logalerta.data AND data_inicio_SP &lt; logalerta.data UNION SELECT 'logcartao',logcartao.idlogCartao AS '', logcartao.idCartao AS '', logcartao.Ativo AS '', logcartao.EmailUtilizador AS '', logcartao.NomeUtilizador AS '', logcartao.TipoUtilizador AS '', logcartao.EmailUtilizadorConsultor AS '', logcartao.NomeUtilizadorConsultor AS '', logcartao.TipoUtilizadorConsultor AS '', logcartao.Data AS '',logcartao.Comando AS '',logcartao.Resultado AS '', '','','' FROM logcartao WHERE data_fim_SP &gt; logcartao.data AND data_inicio_SP &lt; logcartao.data UNION SELECT 'logmedicaosensores',logmedicaosensores.idLogMedicao AS '', logmedicaosensores.IDmedicao AS '', logmedicaosensores.TipoSensor AS '',logmedicaosensores.DataHoraMedicao AS '',logmedicaosensores.EmailUtilizadorConsultor AS '',logmedicaosensores.NomeUtilizadorConsultor AS '',logmedicaosensores.TipoUtilizadorConsultor AS '',logmedicaosensores.Data AS '',logmedicaosensores.Comando AS '', logmedicaosensores.Resultado AS '', logmedicaosensores.PossivelAnomalia AS '', '', '', '', '' FROM logmedicaosensores  WHERE data_fim_SP &gt; logmedicaosensores.data AND data_inicio_SP &lt; logmedicaosensores.data UNION SELECT 'logronda', logronda.idlogRonda AS '', logronda.DiaSemana AS '', logronda.HoraRonda AS '', logronda.Duracao AS '', logronda.EmailUtilizador AS '', logronda.NomeUtilizador AS '', logronda.TipoUtilizador AS '', logronda.EmailUtilizadorConsultor AS '', logronda.NomeUtilizadorConsultor AS '', logronda.TipoUtilizadorConsultor AS '', logronda.Data AS '', logronda.Comando AS '', logronda.Resultado, '', '' from logronda  WHERE data_fim_SP &gt; logronda.data AND data_inicio_SP &lt; logronda.data UNION SELECT 'logrondaextra',logrondaextra.idlogRondaExtra AS '', logrondaextra.DataHora AS '', logrondaextra.EmailUtilizador AS '', logrondaextra.NomeUtilizador AS '', logrondaextra.TipoUtilizador AS '', logrondaextra.EmailUtilizadorConsultor AS '', logrondaextra.NomeUtilizadorConsultor AS '', logrondaextra.TipoUtilizadorConsultor AS '', logrondaextra.Data AS '', logrondaextra.Comando AS '', logrondaextra.Resultado AS '','','','',''  from logrondaextra  WHERE data_fim_SP &gt; logrondaextra.data AND data_inicio_SP &lt; logrondaextra.data UNION SELECT 'logsistema',logsistema.idlogSistema AS '', logsistema.IDSistema AS '', logsistema.LimiteTemperatura AS '', logsistema.LimiteHumidade AS '', logsistema.LimiteLuminosidade AS '', logsistema.LimiarTemperatura AS '', logsistema.LimiarHumidade AS '', logsistema.LimiarLuminosidade AS '', logsistema.DuracaoPadraoRonda AS '', logsistema.EmailUtilizadorConsultor AS '',logsistema.NomeUtilizadorConsultor AS '', logsistema.TipoUtilizadorConsultor AS '', logsistema.Data AS '', logsistema.Comando AS '', logsistema.Resultado AS '' from logsistema  WHERE data_fim_SP &gt; logsistema.data AND data_inicio_SP &lt; logsistema.data UNION
+                SELECT 'logutilizador', logutilizador.idlogUtilizador AS '', logutilizador.EmailUtilizadorConsultado AS '', logutilizador.NomeUtilizadorConsultado AS '', logutilizador.TipoUtilizadorConsultado AS '', logutilizador.EmailUtilizadorConsultor AS '', logutilizador.NomeUtilizadorConsultor AS '', logutilizador.TipoUtilizadorConsultor AS '', logutilizador.Data AS '', logutilizador.Comando AS '', logutilizador.Resultado AS '', '' , '' ,'', '', '' from logutilizador  WHERE data_fim_SP &gt; logutilizador.data AND data_inicio_SP &lt; logutilizador.data UNION SELECT id_novo ,agendada_extra,agora,ficheiro,numero_entradas_total_novo, numero_entradas_novo,'','','','','','','','','',''
+                INTO OUTFILE &quot;C:/xampp/htdocs/ProjetoSIDESII/implementacao_g15/origin_server/log_export/ficheiro_exportacao.csv&quot;
+                FIELDS TERMINATED BY ';'
+                ENCLOSED BY '&quot;'
+                LINES TERMINATED BY '\n';
+                
+                WHEN 'NOK' THEN 
+                		SET numero_entradas_novo = (SELECT COUNT(*) FROM (SELECT 'logalerta',logalerta.idlogAlerta,logalerta.IDAlerta,logalerta.TipoAlerta,logalerta.DataHoraAlerta,logalerta.IDMedicao,logalerta.ValorMedicao,logalerta.TipoSensor,logalerta.DataHoraMedicao,logalerta.EmailUtilizadorConsultor,logalerta.NomeUtilizadorConsultor,logalerta.TipoUtilizadorConsultor,logalerta.Data,logalerta.Comando,logalerta.Resultado, ''  from logalerta WHERE data_inicio &lt; logalerta.data UNION SELECT 'logcartao',logcartao.idlogCartao, logcartao.idCartao, logcartao.Ativo, logcartao.EmailUtilizador, logcartao.NomeUtilizador, logcartao.TipoUtilizador, logcartao.EmailUtilizadorConsultor, logcartao.NomeUtilizadorConsultor, logcartao.TipoUtilizadorConsultor, logcartao.Data,logcartao.Comando,logcartao.Resultado, '','','' FROM logcartao WHERE data_inicio &lt; logcartao.data UNION SELECT 'logmedicaosensores',logmedicaosensores.idLogMedicao, logmedicaosensores.IDmedicao, logmedicaosensores.TipoSensor,logmedicaosensores.DataHoraMedicao,logmedicaosensores.EmailUtilizadorConsultor,logmedicaosensores.NomeUtilizadorConsultor,logmedicaosensores.TipoUtilizadorConsultor,logmedicaosensores.Data,logmedicaosensores.Comando, logmedicaosensores.Resultado, logmedicaosensores.PossivelAnomalia, '', '', '', '' FROM logmedicaosensores  WHERE data_inicio &lt; logmedicaosensores.data UNION SELECT 'logronda', logronda.idlogRonda, logronda.DiaSemana, logronda.HoraRonda, logronda.Duracao, logronda.EmailUtilizador, logronda.NomeUtilizador, logronda.TipoUtilizador, logronda.EmailUtilizadorConsultor, logronda.NomeUtilizadorConsultor, logronda.TipoUtilizadorConsultor, logronda.Data, logronda.Comando, logronda.Resultado, '', '' from logronda  WHERE data_inicio &lt; logronda.data UNION SELECT 'logrondaextra',logrondaextra.idlogRondaExtra, logrondaextra.DataHora, logrondaextra.EmailUtilizador, logrondaextra.NomeUtilizador, logrondaextra.TipoUtilizador, logrondaextra.EmailUtilizadorConsultor, logrondaextra.NomeUtilizadorConsultor, logrondaextra.TipoUtilizadorConsultor, logrondaextra.Data, logrondaextra.Comando, logrondaextra.Resultado,'','','','' from logrondaextra  WHERE data_inicio &lt; logrondaextra.data UNION SELECT 'logsistema',logsistema.idlogSistema, logsistema.IDSistema, logsistema.LimiteTemperatura, logsistema.LimiteHumidade, logsistema.LimiteLuminosidade, logsistema.LimiarTemperatura, logsistema.LimiarHumidade, logsistema.LimiarLuminosidade, logsistema.DuracaoPadraoRonda, logsistema.EmailUtilizadorConsultor,logsistema.NomeUtilizadorConsultor, logsistema.TipoUtilizadorConsultor, logsistema.Data, logsistema.Comando, logsistema.Resultado from logsistema  WHERE data_inicio &lt; logsistema.data UNION
+                SELECT 'logutilizador', logutilizador.idlogUtilizador, logutilizador.EmailUtilizadorConsultado, logutilizador.NomeUtilizadorConsultado, logutilizador.TipoUtilizadorConsultado, logutilizador.EmailUtilizadorConsultor, logutilizador.NomeUtilizadorConsultor, logutilizador.TipoUtilizadorConsultor, logutilizador.Data, logutilizador.Comando, logutilizador.Resultado, '' , '' ,'', '', ''  from logutilizador  WHERE data_inicio &lt; logutilizador.data) AS numero_entradas_novo);
+                SET numero_entradas_total_novo = numero_entradas_novo + numero_entradas_total;
+                     SELECT 'logalerta',logalerta.idlogAlerta AS '',logalerta.IDAlerta,logalerta.TipoAlerta AS '',logalerta.DataHoraAlerta AS '',logalerta.IDMedicao  AS '',logalerta.ValorMedicao AS '',logalerta.TipoSensor AS '',logalerta.DataHoraMedicao AS '',logalerta.EmailUtilizadorConsultor AS '',logalerta.NomeUtilizadorConsultor AS '',logalerta.TipoUtilizadorConsultor AS '',logalerta.Data AS '',logalerta.Comando AS '',logalerta.Resultado AS '', '' from logalerta  WHERE data_inicio &lt; logalerta.data UNION SELECT 'logcartao',logcartao.idlogCartao AS '', logcartao.idCartao AS '', logcartao.Ativo AS '', logcartao.EmailUtilizador AS '', logcartao.NomeUtilizador AS '', logcartao.TipoUtilizador AS '', logcartao.EmailUtilizadorConsultor AS '', logcartao.NomeUtilizadorConsultor AS '', logcartao.TipoUtilizadorConsultor AS '', logcartao.Data AS '',logcartao.Comando AS '',logcartao.Resultado AS '', '','','' FROM logcartao WHERE data_inicio &lt; logcartao.data UNION SELECT 'logmedicaosensores',logmedicaosensores.idLogMedicao AS '', logmedicaosensores.IDmedicao AS '', logmedicaosensores.TipoSensor AS '',logmedicaosensores.DataHoraMedicao AS '',logmedicaosensores.EmailUtilizadorConsultor AS '',logmedicaosensores.NomeUtilizadorConsultor AS '',logmedicaosensores.TipoUtilizadorConsultor AS '',logmedicaosensores.Data AS '',logmedicaosensores.Comando AS '', logmedicaosensores.Resultado AS '', logmedicaosensores.PossivelAnomalia AS '', '', '', '', '' FROM logmedicaosensores  WHERE data_inicio &lt; logmedicaosensores.data UNION SELECT 'logronda', logronda.idlogRonda AS '', logronda.DiaSemana AS '', logronda.HoraRonda AS '', logronda.Duracao AS '', logronda.EmailUtilizador AS '', logronda.NomeUtilizador AS '', logronda.TipoUtilizador AS '', logronda.EmailUtilizadorConsultor AS '', logronda.NomeUtilizadorConsultor AS '', logronda.TipoUtilizadorConsultor AS '', logronda.Data AS '', logronda.Comando AS '', logronda.Resultado, '', '' from logronda  WHERE data_inicio &lt; logronda.data UNION SELECT 'logrondaextra',logrondaextra.idlogRondaExtra AS '', logrondaextra.DataHora AS '', logrondaextra.EmailUtilizador AS '', logrondaextra.NomeUtilizador AS '', logrondaextra.TipoUtilizador AS '', logrondaextra.EmailUtilizadorConsultor AS '', logrondaextra.NomeUtilizadorConsultor AS '', logrondaextra.TipoUtilizadorConsultor AS '', logrondaextra.Data AS '', logrondaextra.Comando AS '', logrondaextra.Resultado AS '','','','',''  from logrondaextra  WHERE data_inicio &lt; logrondaextra.data UNION SELECT 'logsistema',logsistema.idlogSistema AS '', logsistema.IDSistema AS '', logsistema.LimiteTemperatura AS '', logsistema.LimiteHumidade AS '', logsistema.LimiteLuminosidade AS '', logsistema.LimiarTemperatura AS '', logsistema.LimiarHumidade AS '', logsistema.LimiarLuminosidade AS '', logsistema.DuracaoPadraoRonda AS '', logsistema.EmailUtilizadorConsultor AS '',logsistema.NomeUtilizadorConsultor AS '', logsistema.TipoUtilizadorConsultor AS '', logsistema.Data AS '', logsistema.Comando AS '', logsistema.Resultado AS '' from logsistema  WHERE data_inicio &lt; logsistema.data UNION
+                SELECT 'logutilizador', logutilizador.idlogUtilizador AS '', logutilizador.EmailUtilizadorConsultado AS '', logutilizador.NomeUtilizadorConsultado AS '', logutilizador.TipoUtilizadorConsultado AS '', logutilizador.EmailUtilizadorConsultor AS '', logutilizador.NomeUtilizadorConsultor AS '', logutilizador.TipoUtilizadorConsultor AS '', logutilizador.Data AS '', logutilizador.Comando AS '', logutilizador.Resultado AS '', '' , '' ,'', '', '' from logutilizador  WHERE data_inicio &lt; logutilizador.data UNION SELECT id_novo ,agendada_extra,agora,ficheiro,numero_entradas_total_novo, numero_entradas_novo,'','','','','','','','','',''
+                INTO OUTFILE &quot;C:/xampp/htdocs/ProjetoSIDESII/implementacao_g15/origin_server/log_export/ficheiro_exportacao.csv&quot;
+                FIELDS TERMINATED BY ';'
+                ENCLOSED BY '&quot;'
+                LINES TERMINATED BY '\n';
+                
+                END CASE;
+                
+                
+                	
+                
+                
+                
+                END
+            </pma:procedure>
+            <pma:procedure name="InserirUtilizador">
+                CREATE DEFINER=`root`@`localhost` PROCEDURE `InserirUtilizador`(`Email` VARCHAR(100), `Nome` VARCHAR(200), `Tipo` VARCHAR(3), `Pass` VARCHAR(10))
+                BEGIN
+                	SELECT user INTO @userId FROM (
+                		SELECT user, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+                    WHERE userhost = USER();
+                	SELECT default_role INTO @role FROM (
+                        SELECT default_role, CONCAT(user, '@', host) as userhost FROM mysql.user) base
+                    WHERE userhost = USER();
+                	 IF(CURRENT_ROLE = 'chefe_seguranca' OR @role= 'chefe_seguranca') THEN
+                		IF(Tipo = 'SEG') THEN
+                			INSERT INTO utilizador VALUES (
+                				Email,
+                				Nome,
+                				Tipo,
+                				Pass);
+                				SET Email := CONCAT('''', Email, '''', '@', 'localhost'),
+                					Pass := CONCAT('''', Pass, '''');
+                				SET @sql := CONCAT('CREATE USER ', Email, ' IDENTIFIED BY ', Pass);
+                				PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                				SET @sql := CONCAT('GRANT seguranca TO ', Email);
+                                PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                				DEALLOCATE PREPARE stmt;
+                				SET @sql := CONCAT('SET DEFAULT ROLE seguranca FOR ', Email);
+                				PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                				DEALLOCATE PREPARE stmt;
+                		END IF;
+                    ELSEIF (CURRENT_ROLE = 'diretor' OR @role = 'diretor' OR CURRENT_ROLE = 'admnistrador' OR @role='admnistrador') THEN
+                		IF(Tipo = 'SEG') THEN
+                			INSERT INTO utilizador VALUES (
+                				Email,
+                				Nome,
+                				Tipo,
+                				Pass);
+                				SET Email := CONCAT('''', Email, '''', '@', 'localhost'),
+                					Pass := CONCAT('''', Pass, '''');
+                				SET @sql := CONCAT('CREATE USER ', Email, ' IDENTIFIED BY ', Pass);
+                				PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                				SET @sql := CONCAT('GRANT seguranca TO ', Email);
+                                PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                				DEALLOCATE PREPARE stmt;
+                				SET @sql := CONCAT('SET DEFAULT ROLE seguranca FOR ', Email);
+                				PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                				DEALLOCATE PREPARE stmt;
+                		ELSEIF(Tipo = 'CSG') THEN
+                			INSERT INTO utilizador VALUES (
+                				Email,
+                				Nome,
+                				Tipo,
+                				Pass);
+                				SET Email := CONCAT('''', Email, '''', '@', 'localhost'),
+                					Pass := CONCAT('''', Pass, '''');
+                				SET @sql := CONCAT('CREATE USER ', Email, ' IDENTIFIED BY ', Pass);
+                				PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                				SET @sql := CONCAT('GRANT chefe_seguranca TO ', Email);
+                                PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                				DEALLOCATE PREPARE stmt;
+                				SET @sql := CONCAT('SET DEFAULT ROLE chefe_seguranca FOR ', Email);
+                				PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                				DEALLOCATE PREPARE stmt;
+                		ELSEIF(Tipo = 'DIR') THEN
+                			INSERT INTO utilizador VALUES (
+                				Email,
+                				Nome,
+                				Tipo,
+                				Pass);
+                				SET Email := CONCAT('''', Email, '''', '@', 'localhost'),
+                					Pass := CONCAT('''', Pass, '''');
+                				SET @sql := CONCAT('CREATE USER ', Email, ' IDENTIFIED BY ', Pass);
+                				PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                				SET @sql := CONCAT('GRANT diretor TO ', Email);
+                                PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                				DEALLOCATE PREPARE stmt;
+                				SET @sql := CONCAT('SET DEFAULT ROLE diretor FOR ', Email);
+                				PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                				DEALLOCATE PREPARE stmt;
+                        ELSEIF(Tipo = 'AUD') THEN
+                			INSERT INTO utilizador VALUES (
+                				Email,
+                				Nome,
+                				Tipo,
+                				Pass);
+                				SET Email := CONCAT('''', Email, '''', '@', 'localhost'),
+                					Pass := CONCAT('''', Pass, '''');
+                				SET @sql := CONCAT('CREATE USER ', Email, ' IDENTIFIED BY ', Pass);
+                				PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                				SET @sql := CONCAT('GRANT auditor TO ', Email);
+                                PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                				DEALLOCATE PREPARE stmt;
+                				SET @sql := CONCAT('SET DEFAULT ROLE auditor FOR ', Email);
+                				PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                				DEALLOCATE PREPARE stmt; 
+                		ELSEIF(Tipo = 'ADM') THEN
+                			INSERT INTO utilizador VALUES (
+                				Email,
+                				Nome,
+                				Tipo,
+                				Pass);
+                				SET Email := CONCAT('''', Email, '''', '@', 'localhost'),
+                					Pass := CONCAT('''', Pass, '''');
+                				SET @sql := CONCAT('CREATE USER ', Email, ' IDENTIFIED BY ', Pass);
+                				PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                				SET @sql := CONCAT('GRANT admnistrador TO ', Email);
+                                PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                				DEALLOCATE PREPARE stmt;
+                				SET @sql := CONCAT('SET DEFAULT ROLE admnistrador FOR ', Email);
+                				PREPARE stmt FROM @sql;
+                				EXECUTE stmt;
+                				DEALLOCATE PREPARE stmt;
+                		END IF;
+                    END IF;
+                END
+            </pma:procedure>
+        </pma:database>
+    </pma:structure_schemas>
+
+    <!--
+    - Database: 'museum'
+    -->
+    <database name="museum">
+        <!-- Table alerta -->
+        <!-- Table cartao -->
+        <!-- Table diasemana -->
+        <!-- Table logalerta -->
+        <table name="logalerta">
+            <column name="idlogAlerta">1</column>
+            <column name="IDAlerta">1</column>
+            <column name="TipoAlerta">2</column>
+            <column name="DataHoraAlerta">2020-03-24 18:38:54</column>
+            <column name="IDMedicao">0</column>
+            <column name="ValorMedicao">0.00</column>
+            <column name="TipoSensor"></column>
+            <column name="DataHoraMedicao">2020-03-24 18:38:54</column>
+            <column name="EmailUtilizadorConsultor">cecr</column>
+            <column name="NomeUtilizadorConsultor"></column>
+            <column name="TipoUtilizadorConsultor"></column>
+            <column name="Data">2020-03-24 18:38:54</column>
+            <column name="Comando"></column>
+            <column name="Resultado">NULL</column>
+        </table>
+        <!-- Table logcartao -->
+        <table name="logcartao">
+            <column name="idlogCartao">1</column>
+            <column name="idCartao">user_teste@email.pt</column>
+            <column name="Ativo">0</column>
+            <column name="EmailUtilizador">user_teste@email.pt</column>
+            <column name="NomeUtilizador">user_teste</column>
+            <column name="TipoUtilizador">r</column>
+            <column name="EmailUtilizadorConsultor">user_teste@email.pt</column>
+            <column name="NomeUtilizadorConsultor">user_teste@email.pt</column>
+            <column name="TipoUtilizadorConsultor">n</column>
+            <column name="Data">1998-12-02 00:00:01</column>
+            <column name="Comando">teste</column>
+            <column name="Resultado">teste</column>
+        </table>
+        <table name="logcartao">
+            <column name="idlogCartao">2</column>
+            <column name="idCartao">user_teste@email.pt</column>
+            <column name="Ativo">1</column>
+            <column name="EmailUtilizador">user_teste@email.pt</column>
+            <column name="NomeUtilizador">user_teste</column>
+            <column name="TipoUtilizador">d</column>
+            <column name="EmailUtilizadorConsultor">user_teste@email.pt</column>
+            <column name="NomeUtilizadorConsultor">user_teste@email.pt</column>
+            <column name="TipoUtilizadorConsultor">u</column>
+            <column name="Data">1998-12-02 00:00:00</column>
+            <column name="Comando">teste</column>
+            <column name="Resultado">teste</column>
+        </table>
+        <table name="logcartao">
+            <column name="idlogCartao">3</column>
+            <column name="idCartao">user_teste@email.pt</column>
+            <column name="Ativo">0</column>
+            <column name="EmailUtilizador">user_teste@email.pt</column>
+            <column name="NomeUtilizador">user_teste</column>
+            <column name="TipoUtilizador">g</column>
+            <column name="EmailUtilizadorConsultor">user_teste@email.pt</column>
+            <column name="NomeUtilizadorConsultor">user_teste@email.pt</column>
+            <column name="TipoUtilizadorConsultor">r</column>
+            <column name="Data">1998-12-02 00:00:00</column>
+            <column name="Comando">teste</column>
+            <column name="Resultado">teste</column>
+        </table>
+        <table name="logcartao">
+            <column name="idlogCartao">4</column>
+            <column name="idCartao">user_teste@email.pt</column>
+            <column name="Ativo">0</column>
+            <column name="EmailUtilizador">user_teste@email.pt</column>
+            <column name="NomeUtilizador">user_teste</column>
+            <column name="TipoUtilizador">i</column>
+            <column name="EmailUtilizadorConsultor">user_teste@email.pt</column>
+            <column name="NomeUtilizadorConsultor">user_teste@email.pt</column>
+            <column name="TipoUtilizadorConsultor">s</column>
+            <column name="Data">1998-12-02 00:00:00</column>
+            <column name="Comando">teste</column>
+            <column name="Resultado">teste</column>
+        </table>
+        <table name="logcartao">
+            <column name="idlogCartao">5</column>
+            <column name="idCartao">user_teste@email.pt</column>
+            <column name="Ativo">0</column>
+            <column name="EmailUtilizador">user_teste@email.pt</column>
+            <column name="NomeUtilizador">user_teste</column>
+            <column name="TipoUtilizador">n</column>
+            <column name="EmailUtilizadorConsultor">user_teste@email.pt</column>
+            <column name="NomeUtilizadorConsultor">user_teste@email.pt</column>
+            <column name="TipoUtilizadorConsultor">k</column>
+            <column name="Data">1998-12-02 00:00:00</column>
+            <column name="Comando">teste</column>
+            <column name="Resultado">teste</column>
+        </table>
+        <table name="logcartao">
+            <column name="idlogCartao">6</column>
+            <column name="idCartao">user_teste@email.pt</column>
+            <column name="Ativo">0</column>
+            <column name="EmailUtilizador">user_teste@email.pt</column>
+            <column name="NomeUtilizador">user_teste</column>
+            <column name="TipoUtilizador">x</column>
+            <column name="EmailUtilizadorConsultor">user_teste@email.pt</column>
+            <column name="NomeUtilizadorConsultor">user_teste@email.pt</column>
+            <column name="TipoUtilizadorConsultor">t</column>
+            <column name="Data">1998-12-02 00:00:00</column>
+            <column name="Comando">teste</column>
+            <column name="Resultado">teste</column>
+        </table>
+        <table name="logcartao">
+            <column name="idlogCartao">7</column>
+            <column name="idCartao">user_teste@email.pt</column>
+            <column name="Ativo">0</column>
+            <column name="EmailUtilizador">user_teste@email.pt</column>
+            <column name="NomeUtilizador">user_teste</column>
+            <column name="TipoUtilizador">y</column>
+            <column name="EmailUtilizadorConsultor">user_teste@email.pt</column>
+            <column name="NomeUtilizadorConsultor">user_teste@email.pt</column>
+            <column name="TipoUtilizadorConsultor">u</column>
+            <column name="Data">1998-12-02 00:00:00</column>
+            <column name="Comando">teste</column>
+            <column name="Resultado">teste</column>
+        </table>
+        <table name="logcartao">
+            <column name="idlogCartao">8</column>
+            <column name="idCartao">user_teste@email.pt</column>
+            <column name="Ativo">0</column>
+            <column name="EmailUtilizador">user_teste@email.pt</column>
+            <column name="NomeUtilizador">user_teste</column>
+            <column name="TipoUtilizador">m</column>
+            <column name="EmailUtilizadorConsultor">user_teste@email.pt</column>
+            <column name="NomeUtilizadorConsultor">user_teste@email.pt</column>
+            <column name="TipoUtilizadorConsultor">w</column>
+            <column name="Data">1998-12-02 00:00:00</column>
+            <column name="Comando">teste</column>
+            <column name="Resultado">teste</column>
+        </table>
+        <table name="logcartao">
+            <column name="idlogCartao">9</column>
+            <column name="idCartao">user_teste@email.pt</column>
+            <column name="Ativo">1</column>
+            <column name="EmailUtilizador">user_teste@email.pt</column>
+            <column name="NomeUtilizador">user_teste</column>
+            <column name="TipoUtilizador">w</column>
+            <column name="EmailUtilizadorConsultor">user_teste@email.pt</column>
+            <column name="NomeUtilizadorConsultor">user_teste@email.pt</column>
+            <column name="TipoUtilizadorConsultor">i</column>
+            <column name="Data">1998-12-02 00:00:00</column>
+            <column name="Comando">teste</column>
+            <column name="Resultado">teste</column>
+        </table>
+        <!-- Table logmedicaosensores -->
+        <!-- Table logronda -->
+        <table name="logronda">
+            <column name="idlogRonda">1</column>
+            <column name="DiaSemana">vsdd</column>
+            <column name="HoraRonda">00:00:01</column>
+            <column name="Duracao">1</column>
+            <column name="EmailUtilizador">jipsefrj</column>
+            <column name="NomeUtilizador">svfdfdsv</column>
+            <column name="TipoUtilizador">cs</column>
+            <column name="EmailUtilizadorConsultor">svrsdv</column>
+            <column name="NomeUtilizadorConsultor">vsfvsdfv</column>
+            <column name="TipoUtilizadorConsultor">vf</column>
+            <column name="Data">2020-03-24 18:34:35</column>
+            <column name="Comando">vsdfvsdf</column>
+            <column name="Resultado">vsvdsrvesvss</column>
+        </table>
+        <!-- Table logrondaextra -->
+        <!-- Table logsistema -->
+        <!-- Table logutilizador -->
+        <table name="logutilizador">
+            <column name="idlogUtilizador">0</column>
+            <column name="EmailUtilizadorConsultado">mail2</column>
+            <column name="NomeUtilizadorConsultado">nome</column>
+            <column name="TipoUtilizadorConsultado">SEG</column>
+            <column name="EmailUtilizadorConsultor">root</column>
+            <column name="NomeUtilizadorConsultor">root</column>
+            <column name="TipoUtilizadorConsultor">roo</column>
+            <column name="Data">2020-04-15 12:48:37</column>
+            <column name="Comando">INSERT</column>
+            <column name="Resultado">NULL</column>
+        </table>
+        <table name="logutilizador">
+            <column name="idlogUtilizador">1</column>
+            <column name="EmailUtilizadorConsultado">mail</column>
+            <column name="NomeUtilizadorConsultado">nome</column>
+            <column name="TipoUtilizadorConsultado">SEG</column>
+            <column name="EmailUtilizadorConsultor">root</column>
+            <column name="NomeUtilizadorConsultor">root</column>
+            <column name="TipoUtilizadorConsultor">roo</column>
+            <column name="Data">2020-04-15 12:46:48</column>
+            <column name="Comando">INSERT</column>
+            <column name="Resultado">NULL</column>
+        </table>
+        <!-- Table medicaosensores -->
+        <!-- Table rondaextra -->
+        <!-- Table ronda_planeada -->
+        <!-- Table sistema -->
+        <!-- Table utilizador -->
+        <table name="utilizador">
+            <column name="EmailUtilizador">mail</column>
+            <column name="NomeUtilizador">nome</column>
+            <column name="TipoUtilizador">SEG</column>
+            <column name="Password">password</column>
+        </table>
+        <table name="utilizador">
+            <column name="EmailUtilizador">mail2</column>
+            <column name="NomeUtilizador">nome</column>
+            <column name="TipoUtilizador">SEG</column>
+            <column name="Password">password</column>
+        </table>
+    </database>
+</pma_xml_export>

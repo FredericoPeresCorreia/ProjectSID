@@ -1,0 +1,15 @@
+Refactoring Type	Source Entity	Target Class	Source/Target accessed members	Rate it!
+Move Method	com.jasml.compiler.SourceCodeParser::countAttributes(com.jasml.classes.Method, java.util.ArrayList, com.jasml.classes.Attribute_Code):void	com.jasml.classes.Attribute_Code	0/3	
+Move Method	com.jasml.compiler.REFACTORConstantPoolGeneratorProduct2::lookupDouble(double, com.jasml.compiler.ConstantPoolGenerator):int	com.jasml.compiler.ConstantPoolGenerator	0/2	
+Move Method	com.jasml.compiler.REFACTORConstantPoolGeneratorProduct2::lookupInt(int, com.jasml.compiler.ConstantPoolGenerator):int	com.jasml.compiler.ConstantPoolGenerator	0/2	
+Move Method	com.jasml.compiler.REFACTORConstantPoolGeneratorProduct2::lookupFloat(float, com.jasml.compiler.ConstantPoolGenerator):int	com.jasml.compiler.ConstantPoolGenerator	0/2	
+Move Method	com.jasml.compiler.REFACTORConstantPoolGeneratorProduct2::lookupLong(long, com.jasml.compiler.ConstantPoolGenerator):int	com.jasml.compiler.ConstantPoolGenerator	0/2	
+Move Method	com.jasml.decompiler.SourceCodeBuilder::REFACTORaddVarToTable(com.jasml.classes.Attribute_Code):com.jasml.classes.Attribute_LocalVariableTable.LocalVariable[]	com.jasml.classes.Attribute_Code	0/2	
+Move Method	com.jasml.decompiler.SourceCodeBuilder::REFACTORattributeOPCODE(com.jasml.classes.Method):com.jasml.classes.Attribute_Code.Opcode[]	com.jasml.classes.Method	0/2	
+Move Method	com.jasml.compiler.REFACTORConstantPoolGeneratorProduct2::addFieldNameAndType(java.lang.String, java.lang.String, com.jasml.compiler.ConstantPoolGenerator, java.util.HashMap, com.jasml.compiler.REFACTORConstantPoolGeneratorProduct):int	com.jasml.compiler.ConstantPoolGenerator	1/4	
+Move Method	com.jasml.compiler.REFACTORConstantPoolGeneratorProduct2::addMethodNameAndType(java.lang.String, java.lang.String, java.lang.String, com.jasml.compiler.ConstantPoolGenerator, java.util.HashMap, com.jasml.compiler.REFACTORConstantPoolGeneratorProduct):int	com.jasml.compiler.ConstantPoolGenerator	1/4	
+Move Method	com.jasml.compiler.REFACTORConstantPoolGeneratorProduct2::addDouble(double, com.jasml.classes.ConstantPoolItem[], int, com.jasml.compiler.ConstantPoolGenerator):int	com.jasml.compiler.ConstantPoolGenerator	1/3	
+Move Method	com.jasml.compiler.SourceCodeParser::getAcessFlagToScanner(int):int	com.jasml.compiler.Scanner	1/2	
+Move Method	com.jasml.decompiler.SourceCodeBuilder::toString(com.jasml.classes.Attribute_LineNumberTable):java.lang.String	com.jasml.classes.Attribute_LineNumberTable	1/2	
+Move Method	com.jasml.compiler.JavaClassDumpper::dumpClassHeader():void	com.jasml.classes.JavaClass	2/3	
+Move Method	com.jasml.compiler.JavaClassDumpper::dumpClassInfo():void	com.jasml.classes.JavaClass	2/3	
